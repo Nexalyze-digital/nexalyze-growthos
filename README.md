@@ -1,34 +1,18 @@
 # Nexalyze GrowthOS
 
-Nexalyze GrowthOS is an open-source, AI-powered growth operating system designed to help businesses research, plan, create, publish, analyze, and improve digital content across social media, search, and growth channels.
+Open-source AI Growth Operating System for content, research, publishing, analytics, and automation.
 
-## Current Status
+## Apps
 
-Early development.
+- apps/api - FastAPI backend
+- apps/web - Next.js frontend
+- apps/worker - background jobs
 
-## Core Capabilities Planned
+## Packages
 
-- AI content generation
-- Brand voice memory
-- Social media post creation
-- Human approval workflow
-- Scheduling and publishing
-- Research intelligence
-- Performance analytics
-- SEO, GEO, and AEO optimization
-- Multi-agent automation
-
-## Tech Stack
-
-- FastAPI
-- Next.js
-- PostgreSQL
-- Redis
-- Qdrant
-- Ollama
-- LangGraph
-- Playwright
-
-## License
-
-MIT License.
+- packages/ai - AI provider abstraction
+- packages/auth - authentication utilities
+- packages/database - database models and migrations
+- packages/prompts - prompt templates
+- packages/shared - shared utilities
+- packages/ui - shared UI components
