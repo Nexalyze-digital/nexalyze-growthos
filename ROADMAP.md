@@ -1,5 +1,10 @@
 # Roadmap
 
+## Current Status
+- Engineering foundation: complete
+- AI Content Studio mock-provider release: complete
+- Real AI provider integration: next
+
 ## Sprint 1
 - FastAPI backend
 - First AI content generation endpoint
