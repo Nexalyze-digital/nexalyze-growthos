@@ -4,16 +4,17 @@
 - FastAPI backend
 - First AI content generation endpoint
 - Basic project configuration
+- End-to-end AI Content Studio with mock provider
 
 ## Sprint 2
-- Next.js frontend
-- Draft generation dashboard
+- Replace mock provider with configurable cloud or local LLM provider
+- Persist generated drafts
 - Brand voice prompts
 
 ## Sprint 3
 - Database integration
-- Save generated posts
 - Approval workflow
+- Real dashboard metrics
 
 ## Sprint 4
 - Social media publishing connectors
