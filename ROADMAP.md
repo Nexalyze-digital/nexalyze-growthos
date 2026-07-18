@@ -3,7 +3,8 @@
 ## Current Status
 - Engineering foundation: complete
 - AI Content Studio mock-provider release: complete
-- Real AI provider integration: next
+- Ollama local AI provider integration: in progress
+- Real cloud AI provider integration: next
 
 ## Sprint 1
 - FastAPI backend
@@ -12,7 +13,7 @@
 - End-to-end AI Content Studio with mock provider
 
 ## Sprint 2
-- Replace mock provider with configurable cloud or local LLM provider
+- Replace mock-only generation with configurable local Ollama provider
 - Persist generated drafts
 - Brand voice prompts
 

@@ -56,6 +56,13 @@ export function GeneratedOutput({
     }
   }
 
+  const providerLabel =
+    generatedContent?.provider === "ollama"
+      ? "Ollama"
+      : generatedContent?.provider === "mock-fallback"
+        ? "Mock fallback"
+        : "Mock";
+
   return (
     <Card className="min-h-[520px]">
       <div className="flex items-start justify-between gap-4">
@@ -109,7 +116,16 @@ export function GeneratedOutput({
             <span className="rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-200">
               {generatedContent.tone}
             </span>
+            <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-slate-300">
+              {providerLabel}
+            </span>
           </div>
+
+          {generatedContent.provider === "mock-fallback" ? (
+            <div className="rounded-lg border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm text-amber-100">
+              Local AI was unavailable, so GrowthOS used the offline fallback.
+            </div>
+          ) : null}
 
           <div className="rounded-lg border border-white/10 bg-slate-950/60 p-5">
             <h3 className="text-xl font-semibold text-white">

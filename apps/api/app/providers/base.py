@@ -11,3 +11,11 @@ class ContentProvider(ABC):
         self, request: ContentGenerationRequest
     ) -> ContentGenerationResponse:
         raise NotImplementedError
+
+
+class ProviderUnavailableError(RuntimeError):
+    pass
+
+
+class ProviderResponseError(RuntimeError):
+    pass

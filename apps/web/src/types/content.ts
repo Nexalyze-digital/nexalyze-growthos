@@ -36,5 +36,5 @@ export type GeneratedContent = {
   hashtags: string[];
   platform: Platform;
   tone: Tone;
-  provider: "mock" | string;
+  provider: "ollama" | "mock-fallback" | "mock" | string;
 };
