@@ -10,6 +10,13 @@ All notable changes to this project will be documented here.
 - Added backend tests, local environment examples, QA documentation, and startup scripts.
 - Documented that content generation uses a mock provider and does not call a cloud or local LLM yet.
 
+## 0.1.2
+
+- Added a local Ollama content provider behind the existing provider abstraction.
+- Preserved deterministic mock generation for tests, offline development, and fallback.
+- Added provider status in `/health` and provider badges in generated output.
+- Documented Ollama setup, environment variables, fallback behavior, and privacy notes.
+
 ## 0.1.0
 
 - Initial repository structure
