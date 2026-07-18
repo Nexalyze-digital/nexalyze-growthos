@@ -2,9 +2,13 @@
 
 ## Current Status
 - Engineering foundation: complete
-- AI Content Studio mock-provider release: complete
-- Ollama local AI provider integration: in progress
-- Real cloud AI provider integration: next
+- AI Content Studio: Complete
+- Local AI Integration: Complete
+- Brand Brain: Next
+- Research Hub: Planned
+- Publishing Engine: Planned
+- Website Intelligence: Planned
+- Lead Intelligence Integration: Planned
 
 ## Sprint 1
 - FastAPI backend
@@ -13,7 +17,7 @@
 - End-to-end AI Content Studio with mock provider
 
 ## Sprint 2
-- Replace mock-only generation with configurable local Ollama provider
+- Brand Brain
 - Persist generated drafts
 - Brand voice prompts
 
@@ -21,8 +25,11 @@
 - Database integration
 - Approval workflow
 - Real dashboard metrics
+- Research Hub
 
 ## Sprint 4
-- Social media publishing connectors
+- Publishing Engine
+- Website Intelligence
+- Lead Intelligence Integration
 - Scheduler
 - Analytics foundation
