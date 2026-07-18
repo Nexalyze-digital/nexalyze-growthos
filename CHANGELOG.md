@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented here.
 
+## 0.3.0
+
+- Added Brand Brain core with JSON-backed persistence.
+- Added Brand Brain CRUD API, validation, repository layer, and service layer.
+- Added Brand Brain dashboard, profile editor, voice editor, persona/product/competitor managers, and preview panel.
+- Injected active Brand Brain context into AI Content Studio generation requests.
+- Added tests for Brand Brain CRUD, validation, and AI prompt injection.
+- Documented Brand Brain architecture, adoption patterns, and future database migration path.
+
+## 0.2.5
+
+- Established the enterprise engineering foundation.
+- Added architecture review, global skills integration, open-source catalog, dependency audit, coding standards, module blueprints, and AI provider roadmap.
+- Confirmed no runtime functionality changes in the foundation release.
+
 ## 0.1.1
 
 - Delivered the end-to-end AI Content Studio release.

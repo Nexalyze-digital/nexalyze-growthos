@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "llama3.2:latest"
     ollama_timeout_seconds: float = 90
+    brand_store_path: str = "data/brand-brain.json"
     cors_origins: list[str] = Field(
         default_factory=lambda: [
             "http://localhost:3000",

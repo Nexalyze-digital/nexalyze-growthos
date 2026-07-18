@@ -16,6 +16,14 @@ The default checked-in local configuration documents Ollama through `apps/api/.e
 
 See `docs/AI/OLLAMA-INTEGRATION.md` for local inference setup and troubleshooting.
 
+## Brand Brain
+
+Brand Brain is the persistent brand memory layer for GrowthOS. It stores company profile, mission, audience, ICP, buyer personas, competitors, voice, tone, offers, proof, URLs, CTAs, hashtags, forbidden phrases, terminology, languages, and regional preferences.
+
+The FastAPI backend exposes Brand Brain CRUD endpoints under `/api/v1/brands` with JSON persistence for the initial implementation. AI Content Studio automatically injects the active Brand Brain profile into content generation requests and returns `brand_context_applied` metadata.
+
+See `docs/AI/BRAND-BRAIN.md` for the architecture, data model, prompt injection strategy, and migration path.
+
 ## Apps
 
 - apps/api - FastAPI backend

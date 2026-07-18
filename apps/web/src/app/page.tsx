@@ -1,3 +1,4 @@
+import { BrandBrain } from "@/components/brand-brain/BrandBrain";
 import { ContentStudio } from "@/components/content-studio/ContentStudio";
 import { DashboardHero } from "@/components/dashboard/DashboardHero";
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
@@ -11,6 +12,7 @@ export default function HomePage() {
         <DashboardHero />
         <DashboardStats />
         <QuickActions />
+        <BrandBrain />
         <ContentStudio />
       </div>
     </AppShell>

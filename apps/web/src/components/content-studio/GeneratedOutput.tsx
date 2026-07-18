@@ -127,6 +127,13 @@ export function GeneratedOutput({
             </div>
           ) : null}
 
+          {generatedContent.brand_context_applied ? (
+            <div className="rounded-lg border border-emerald-300/20 bg-emerald-300/10 px-4 py-3 text-sm text-emerald-100">
+              Brand Brain applied
+              {generatedContent.brand_name ? `: ${generatedContent.brand_name}` : ""}.
+            </div>
+          ) : null}
+
           <div className="rounded-lg border border-white/10 bg-slate-950/60 p-5">
             <h3 className="text-xl font-semibold text-white">
               {generatedContent.title}

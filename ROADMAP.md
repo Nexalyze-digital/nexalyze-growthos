@@ -4,7 +4,7 @@
 - Engineering foundation: complete
 - AI Content Studio: Complete
 - Local AI Integration: Complete
-- Brand Brain: Next
+- Brand Brain: In Progress
 - Research Hub: Planned
 - Publishing Engine: Planned
 - Website Intelligence: Planned
@@ -17,7 +17,7 @@
 - End-to-end AI Content Studio with mock provider
 
 ## Sprint 2
-- Brand Brain
+- Brand Brain core
 - Persist generated drafts
 - Brand voice prompts
 
