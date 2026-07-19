@@ -34,6 +34,21 @@ Research Hub uses the same local provider posture as Content Studio: Ollama when
 
 See `docs/AI/RESEARCH-HUB.md` and `docs/QA/RESEARCH-HUB.md`.
 
+## Platform Identity And Database
+
+GrowthOS v0.5.0 adds the multi-user platform foundation:
+
+- Registration, login, logout, current-user, access-token, and refresh-token workflows.
+- Organizations, workspaces, memberships, and roles.
+- Workspace switcher in the application shell.
+- Workspace-scoped Brand Brain and Research Hub data.
+- SQLAlchemy database persistence with Alembic migration scaffolding.
+- JSON-to-database migration utility with dry-run and backup support.
+
+For production, set `APP_ENV=production`, set a strong `JWT_SECRET_KEY`, configure `DATABASE_URL`, install the PostgreSQL driver, and complete live PostgreSQL validation before handling customer data.
+
+See `docs/AI/PLATFORM-IDENTITY-DATABASE.md` and `docs/QA/PLATFORM-IDENTITY-DATABASE.md`.
+
 ## Apps
 
 - apps/api - FastAPI backend

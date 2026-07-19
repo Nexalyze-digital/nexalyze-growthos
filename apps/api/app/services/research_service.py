@@ -3,6 +3,7 @@ from pathlib import Path
 from fastapi import HTTPException, status
 
 from app.core.config import settings
+from app.db.models import AuditEvent
 from app.providers.research_base import (
     ResearchProvider,
     ResearchProviderResponseError,
@@ -16,9 +17,19 @@ from app.services.brand_service import get_brand_service
 
 
 class ResearchService:
-    def __init__(self, repository: ResearchRepository, provider: ResearchProvider) -> None:
+    def __init__(
+        self,
+        repository: ResearchRepository,
+        provider: ResearchProvider,
+        user_id: str | None = None,
+        workspace_id: str | None = None,
+        brand_service=None,
+    ) -> None:
         self.repository = repository
         self.provider = provider
+        self.user_id = user_id
+        self.workspace_id = workspace_id
+        self.brand_service = brand_service
 
     def list_runs(self) -> ResearchRunList:
         return ResearchRunList(runs=self._read(lambda: self.repository.list()))
@@ -32,7 +43,9 @@ class ResearchService:
     def create_run(self, request: ResearchRunCreate) -> ResearchRun:
         run = self._execute(request)
         try:
-            return self.repository.create(run)
+            created = self.repository.create(run)
+            self._audit("research.create", created.id)
+            return created
         except ResearchRepositoryError as error:
             raise self._storage_error() from error
 
@@ -43,7 +56,9 @@ class ResearchService:
             update={"id": existing.id, "created_at": existing.created_at, "updated_at": utc_now()}
         )
         try:
-            return self.repository.update(regenerated)
+            updated = self.repository.update(regenerated)
+            self._audit("research.regenerate", updated.id)
+            return updated
         except ResearchRepositoryError as error:
             raise self._storage_error() from error
 
@@ -54,6 +69,7 @@ class ResearchService:
             raise self._storage_error() from error
         if not deleted:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Research run was not found.")
+        self._audit("research.delete", run_id)
 
     def _execute(self, request: ResearchRunCreate) -> ResearchRun:
         protected_context, brand_context_used = self._brand_context(request.brand_id)
@@ -77,7 +93,7 @@ class ResearchService:
     def _brand_context(self, brand_id: str | None) -> tuple[str, bool]:
         if not brand_id:
             return "", False
-        brand_service = get_brand_service()
+        brand_service = self.brand_service or get_brand_service()
         brand = brand_service.get_brand(brand_id)
         context = brand_service.get_context_for_brand(brand)
         if not context.applied:
@@ -119,6 +135,21 @@ class ResearchService:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Research storage is unavailable or corrupted.",
         )
+
+    def _audit(self, action: str, target_id: str) -> None:
+        db = getattr(self.repository, "db", None)
+        if not db:
+            return
+        db.add(
+            AuditEvent(
+                user_id=self.user_id,
+                workspace_id=self.workspace_id,
+                action=action,
+                target_type="research",
+                target_id=target_id,
+            )
+        )
+        db.commit()
 
 
 def get_research_repository() -> ResearchRepository:

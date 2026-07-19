@@ -6,6 +6,7 @@ type FieldProps = {
   onChange: (value: string) => void;
   placeholder?: string;
   required?: boolean;
+  type?: "email" | "password" | "text";
   value: string;
 };
 
@@ -17,6 +18,7 @@ export function Field({
   onChange,
   placeholder,
   required,
+  type = "text",
   value,
 }: FieldProps) {
   return (
@@ -33,6 +35,7 @@ export function Field({
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         required={required}
+        type={type}
         value={value}
       />
       {error ? (

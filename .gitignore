@@ -12,3 +12,7 @@ build/
 *.log
 *.encoding-backup
 apps/api/data/*.json
+apps/api/data/*.json.bak
+apps/api/data/*.db
+apps/api/data/*.sqlite
+apps/api/data/*.sqlite3

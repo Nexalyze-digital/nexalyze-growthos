@@ -6,13 +6,22 @@ Status: v0.2.5 foundation blueprint
 
 Each module should use the same high-level flow:
 
-1. Frontend module captures validated user input.
-2. Frontend API client calls a versioned FastAPI endpoint.
-3. Backend route validates with Pydantic schemas.
+1. Authenticated frontend module captures validated user input.
+2. Frontend API client calls a versioned FastAPI endpoint with access token and active workspace id.
+3. Backend route validates Pydantic schemas, token status, workspace membership, and role permissions.
 4. Service layer coordinates providers, connectors, persistence, and policy.
 5. Provider or connector layer calls AI models or external services.
 6. Response returns typed output, status, provider metadata, and fallback information.
-7. Optional persistence records artifacts, usage, audit events, and workflow state.
+7. Persistence records workspace-scoped artifacts, usage, audit events, and workflow state.
+
+## Platform Identity And Database
+
+- Responsibilities: users, authentication, refresh tokens, organizations, workspaces, memberships, roles, audit events, and migration from local JSON data.
+- APIs: `POST /api/v1/auth/register`, `POST /api/v1/auth/login`, `POST /api/v1/auth/refresh`, `POST /api/v1/auth/logout`, `GET /api/v1/auth/me`, `GET /api/v1/auth/workspaces`, `POST /api/v1/auth/workspaces`.
+- Data flow: user authenticates; frontend stores session; requests include bearer token and workspace id; backend enforces membership and role before module services run.
+- Dependencies: SQLAlchemy, Alembic, password hashing, token signing, CORS configuration, audit events.
+- Future AI agents: none required for core identity; future admin assistant may summarize audit and workspace activity.
+- External integrations: future SSO, email verification, MFA, and production secret management.
 
 ## Brand Brain
 

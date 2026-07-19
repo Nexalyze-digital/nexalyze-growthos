@@ -155,13 +155,13 @@ def test_delete_research_run():
     assert client.get("/api/v1/research/runs").json()["runs"] == []
 
 
-def test_corrupted_research_store_returns_controlled_error():
+def test_database_backed_research_routes_ignore_corrupted_legacy_json():
     Path(settings.research_store_path).write_text("{not-json", encoding="utf-8")
 
     response = client.get("/api/v1/research/runs")
 
-    assert response.status_code == 500
-    assert response.json()["detail"] == "Research storage is unavailable or corrupted."
+    assert response.status_code == 200
+    assert response.json()["runs"] == []
 
 
 def test_research_write_cleans_temporary_files():

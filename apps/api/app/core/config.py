@@ -1,12 +1,18 @@
-from pydantic import Field
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
     app_name: str = "Nexalyze GrowthOS API"
     version: str = "0.1.0"
+    app_env: str = "local"
     ai_provider: str = "mock"
     ai_fallback_provider: str = "mock"
+    database_url: str = "sqlite:///data/growthos.db"
+    jwt_secret_key: str = "local-development-secret-change-me"
+    access_token_expire_minutes: int = 30
+    refresh_token_expire_days: int = 14
+    auth_rate_limit_per_minute: int = 10
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "llama3.2:latest"
     ollama_timeout_seconds: float = 90
@@ -20,6 +26,16 @@ class Settings(BaseSettings):
             "http://127.0.0.1:3000",
         ]
     )
+
+    @model_validator(mode="after")
+    def validate_production_secrets(self) -> "Settings":
+        production_envs = {"production", "prod"}
+        default_secret = "local-development-secret-change-me"
+        if self.app_env.lower() in production_envs and (
+            self.jwt_secret_key == default_secret or len(self.jwt_secret_key) < 32
+        ):
+            raise ValueError("JWT_SECRET_KEY must be set to a strong production secret.")
+        return self
 
     model_config = SettingsConfigDict(
         env_file=".env",

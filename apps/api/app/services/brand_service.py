@@ -3,6 +3,7 @@ from pathlib import Path
 from fastapi import HTTPException, status
 
 from app.core.config import settings
+from app.db.models import AuditEvent
 from app.repositories.brand_repository import BrandRepository, BrandRepositoryError
 from app.schemas.brand import (
     BrandBrain,
@@ -14,8 +15,10 @@ from app.schemas.brand import (
 
 
 class BrandService:
-    def __init__(self, repository: BrandRepository) -> None:
+    def __init__(self, repository: BrandRepository, user_id: str | None = None, workspace_id: str | None = None) -> None:
         self.repository = repository
+        self.user_id = user_id
+        self.workspace_id = workspace_id
 
     def list_brands(self) -> list[BrandBrain]:
         return self._read(lambda: self.repository.list())
@@ -31,7 +34,9 @@ class BrandService:
 
     def create_brand(self, payload: BrandBrainCreate) -> BrandBrain:
         try:
-            return self.repository.create(BrandBrain(**payload.model_dump()))
+            brand = self.repository.create(BrandBrain(**payload.model_dump()))
+            self._audit("brand.create", brand.id)
+            return brand
         except BrandRepositoryError as error:
             raise self._storage_error() from error
 
@@ -44,7 +49,9 @@ class BrandService:
             updated_at=utc_now(),
         )
         try:
-            return self.repository.update(updated)
+            brand = self.repository.update(updated)
+            self._audit("brand.update", brand.id)
+            return brand
         except BrandRepositoryError as error:
             raise self._storage_error() from error
 
@@ -58,6 +65,7 @@ class BrandService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Brand Brain profile was not found.",
             )
+        self._audit("brand.delete", brand_id)
 
     def get_active_context(self) -> BrandContextSummary:
         brand = self._read(lambda: self.repository.get_active())
@@ -132,6 +140,21 @@ class BrandService:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Brand Brain storage is unavailable or corrupted.",
         )
+
+    def _audit(self, action: str, target_id: str) -> None:
+        db = getattr(self.repository, "db", None)
+        if not db:
+            return
+        db.add(
+            AuditEvent(
+                user_id=self.user_id,
+                workspace_id=self.workspace_id,
+                action=action,
+                target_type="brand",
+                target_id=target_id,
+            )
+        )
+        db.commit()
 
 
 def get_brand_repository() -> BrandRepository:

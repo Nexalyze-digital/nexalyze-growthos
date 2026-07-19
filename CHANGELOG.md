@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented here.
 
+## 0.5.0
+
+- Added authentication with registration, login, logout, access tokens, refresh tokens, password hashing, and current-user endpoint.
+- Added organizations, workspaces, memberships, roles, and workspace switcher.
+- Added SQLAlchemy 2.x database foundation with Alembic scaffolding.
+- Added workspace-scoped Brand Brain and Research Hub persistence.
+- Added JSON migration utility with dry-run, backup, and live local migration support.
+- Added audit events for authentication and protected data changes.
+- Protected Brand Brain, Research Hub, and AI Content Studio behind authenticated workspace context.
+- Scoped CORS headers and methods to GrowthOS API needs.
+
 ## 0.4.0
 
 - Added Research Hub core for structured AI-generated research synthesis.
