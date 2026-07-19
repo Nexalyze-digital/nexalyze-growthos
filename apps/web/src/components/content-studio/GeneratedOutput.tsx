@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/Card";
 
 type GeneratedOutputProps = {
   error: string;
+  canRegenerate: boolean;
   generatedContent: GeneratedContent | null;
   isLoading: boolean;
   onRegenerate: () => void;
@@ -16,6 +17,7 @@ type GeneratedOutputProps = {
 
 export function GeneratedOutput({
   error,
+  canRegenerate,
   generatedContent,
   isLoading,
   onRegenerate,
@@ -95,15 +97,17 @@ export function GeneratedOutput({
           <p className="mt-2 text-sm leading-6 text-red-200/85">
             {error || "Confirm the FastAPI backend is running on port 8000."}
           </p>
-          <Button
-            className="mt-5 w-auto"
-            icon={RefreshCw}
-            onClick={onRegenerate}
-            type="button"
-            variant="secondary"
-          >
-            Retry
-          </Button>
+          {canRegenerate ? (
+            <Button
+              className="mt-5 w-auto"
+              icon={RefreshCw}
+              onClick={onRegenerate}
+              type="button"
+              variant="secondary"
+            >
+              Retry
+            </Button>
+          ) : null}
         </div>
       ) : null}
 
@@ -164,15 +168,17 @@ export function GeneratedOutput({
                   ? "Copy failed"
                   : "Copy full post"}
             </Button>
-            <Button
-              disabled={isLoading}
-              icon={RefreshCw}
-              onClick={onRegenerate}
-              type="button"
-              variant="secondary"
-            >
-              Regenerate
-            </Button>
+            {canRegenerate ? (
+              <Button
+                disabled={isLoading}
+                icon={RefreshCw}
+                onClick={onRegenerate}
+                type="button"
+                variant="secondary"
+              >
+                Regenerate
+              </Button>
+            ) : null}
           </div>
         </div>
       ) : null}

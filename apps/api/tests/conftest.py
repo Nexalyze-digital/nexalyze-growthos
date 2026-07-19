@@ -1,8 +1,8 @@
 import os
 from pathlib import Path
 
-os.environ["DATABASE_URL"] = "sqlite:///data/test-growthos.db"
-os.environ["JWT_SECRET_KEY"] = "test-secret-key"
+os.environ.setdefault("DATABASE_URL", "sqlite:///data/test-growthos.db")
+os.environ.setdefault("JWT_SECRET_KEY", "test-secret-key")
 
 import pytest
 from fastapi.testclient import TestClient
@@ -41,7 +41,13 @@ def clean_database(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
             user_id=user.id,
             role=WorkspaceRole.owner.value,
         )
-        db.add_all([user, organization, workspace, membership])
+        db.add(user)
+        db.flush()
+        db.add(organization)
+        db.flush()
+        db.add(workspace)
+        db.flush()
+        db.add(membership)
         db.commit()
 
     def override_context():

@@ -57,7 +57,9 @@ GrowthOS v0.5.0 establishes the multi-user platform foundation required before P
 - Persist session state locally in the browser.
 - Scope Brand Brain, Research Hub, and AI context lookup to the active workspace.
 - Add SQLAlchemy 2.x persistence and Alembic migration scaffolding.
-- Support SQLite for local/test usage and PostgreSQL configuration for production.
+- Support SQLite for local/test usage and PostgreSQL validation for production-oriented deployments.
+- Require access-token refresh behavior that retries an expired authenticated request once and clears invalid sessions safely.
+- Keep frontend role-aware controls aligned with backend role enforcement without treating UI hiding as authorization.
 - Provide JSON migration dry-run and live migration with backup.
 - Add audit events for login and data changes.
 - Preserve Ollama and mock fallback provider support.

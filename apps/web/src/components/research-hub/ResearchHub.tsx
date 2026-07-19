@@ -25,7 +25,11 @@ import { TextAreaField } from "@/components/ui/TextAreaField";
 
 type Status = "empty" | "loading" | "success" | "error";
 
-export function ResearchHub() {
+type ResearchHubProps = {
+  canEdit: boolean;
+};
+
+export function ResearchHub({ canEdit }: ResearchHubProps) {
   const [brands, setBrands] = useState<BrandBrain[]>([]);
   const [history, setHistory] = useState<ResearchRun[]>([]);
   const [formValues, setFormValues] =
@@ -84,6 +88,9 @@ export function ResearchHub() {
 
   async function submit(event?: FormEvent<HTMLFormElement>) {
     event?.preventDefault();
+    if (!canEdit) {
+      return;
+    }
     setTopicTouched(true);
     if (!canSubmit) {
       return;
@@ -106,7 +113,7 @@ export function ResearchHub() {
   }
 
   async function regenerate() {
-    if (!activeRun) {
+    if (!canEdit || !activeRun) {
       return;
     }
     setStatus("loading");
@@ -289,14 +296,16 @@ export function ResearchHub() {
             </p>
           ) : null}
 
-          <Button
-            className="sm:w-auto"
-            disabled={!canSubmit}
-            icon={Search}
-            type="submit"
-          >
-            {status === "loading" ? "Running research" : "Run Research"}
-          </Button>
+          {canEdit ? (
+            <Button
+              className="sm:w-auto"
+              disabled={!canSubmit}
+              icon={Search}
+              type="submit"
+            >
+              {status === "loading" ? "Running research" : "Run Research"}
+            </Button>
+          ) : null}
         </form>
 
         <Card className="mt-6">
@@ -420,17 +429,21 @@ export function ResearchHub() {
                     ? "Copy failed"
                     : "Copy report"}
               </Button>
-              <Button icon={RefreshCw} onClick={regenerate} type="button" variant="secondary">
-                Regenerate
-              </Button>
-              <Button
-                icon={Trash2}
-                onClick={() => removeRun(activeRun.id)}
-                type="button"
-                variant="secondary"
-              >
-                Delete
-              </Button>
+              {canEdit ? (
+                <>
+                  <Button icon={RefreshCw} onClick={regenerate} type="button" variant="secondary">
+                    Regenerate
+                  </Button>
+                  <Button
+                    icon={Trash2}
+                    onClick={() => removeRun(activeRun.id)}
+                    type="button"
+                    variant="secondary"
+                  >
+                    Delete
+                  </Button>
+                </>
+              ) : null}
             </div>
           </div>
         ) : null}

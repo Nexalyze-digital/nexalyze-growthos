@@ -6,13 +6,15 @@
 - Local AI Integration: Complete
 - Brand Brain: Complete
 - Research Hub: Complete
-- Platform Identity, Workspaces, and Database: In Progress
-- Publishing Engine: Next
+- Platform Identity, Workspaces, and Database: Complete
+- PostgreSQL Live Validation: In Progress
+- Publishing Engine: Planned
 - Website Intelligence: Planned
 - Lead Intelligence Integration: Planned
 - Workflow Automation: Planned
-- Authentication and workspace ownership: In Progress
-- Database migration: In Progress
+- Authentication and workspace ownership: Complete
+- Database migration: Complete
+- Session hardening: In Progress
 
 ## Sprint 1
 - FastAPI backend
@@ -32,6 +34,11 @@
 - JSON-to-database migration
 
 ## Sprint 4
+- PostgreSQL live validation
+- Frontend token refresh
+- Role-aware UI hardening
+
+## Sprint 5
 - Publishing Engine
 - Website Intelligence
 - Lead Intelligence Integration

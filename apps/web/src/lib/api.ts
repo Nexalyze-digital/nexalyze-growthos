@@ -26,6 +26,8 @@ async function parseApiError(response: Response) {
 }
 
 const SESSION_KEY = "growthos.session.v1";
+const SESSION_CHANGED_EVENT = "growthos.session.changed";
+let refreshPromise: Promise<AuthSession | null> | null = null;
 
 export function getStoredSession(): AuthSession | null {
   if (typeof window === "undefined") {
@@ -45,10 +47,12 @@ export function getStoredSession(): AuthSession | null {
 
 export function storeSession(session: AuthSession) {
   window.localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+  window.dispatchEvent(new CustomEvent(SESSION_CHANGED_EVENT, { detail: session }));
 }
 
 export function clearStoredSession() {
   window.localStorage.removeItem(SESSION_KEY);
+  window.dispatchEvent(new CustomEvent(SESSION_CHANGED_EVENT, { detail: null }));
 }
 
 function authHeaders(): HeadersInit {
@@ -62,16 +66,92 @@ function authHeaders(): HeadersInit {
   };
 }
 
-async function apiFetch(path: string, init: RequestInit = {}) {
+export function onStoredSessionChange(callback: (session: AuthSession | null) => void) {
+  if (typeof window === "undefined") {
+    return () => undefined;
+  }
+  const listener = (event: Event) => {
+    callback((event as CustomEvent<AuthSession | null>).detail ?? null);
+  };
+  window.addEventListener(SESSION_CHANGED_EVENT, listener);
+  return () => window.removeEventListener(SESSION_CHANGED_EVENT, listener);
+}
+
+function isExpired(session: AuthSession | null) {
+  if (!session) {
+    return false;
+  }
+  return new Date(session.expires_at).getTime() <= Date.now() + 15_000;
+}
+
+async function refreshSession(): Promise<AuthSession | null> {
+  const currentSession = getStoredSession();
+  if (!currentSession?.refresh_token) {
+    clearStoredSession();
+    return null;
+  }
+  if (!refreshPromise) {
+    refreshPromise = fetch(`${API_BASE_URL}/api/v1/auth/refresh`, {
+      body: JSON.stringify({ refresh_token: currentSession.refresh_token }),
+      headers: { "Content-Type": "application/json" },
+      method: "POST",
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          clearStoredSession();
+          return null;
+        }
+        const refreshed = (await response.json()) as AuthSession;
+        const preservedWorkspace = refreshed.workspaces.some(
+          (workspace) => workspace.id === currentSession.active_workspace_id,
+        )
+          ? currentSession.active_workspace_id
+          : refreshed.active_workspace_id;
+        const nextSession = {
+          ...refreshed,
+          active_workspace_id: preservedWorkspace,
+        };
+        storeSession(nextSession);
+        return nextSession;
+      })
+      .catch(() => {
+        clearStoredSession();
+        return null;
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+  return refreshPromise;
+}
+
+async function apiFetch(path: string, init: RequestInit = {}, retry = true) {
+  if (isExpired(getStoredSession())) {
+    const refreshed = await refreshSession();
+    if (!refreshed) {
+      throw new Error("Your session has expired. Please sign in again.");
+    }
+  }
   try {
-    return await fetch(`${API_BASE_URL}${path}`, {
+    const response = await fetch(`${API_BASE_URL}${path}`, {
       ...init,
       headers: {
         ...authHeaders(),
         ...(init.headers || {}),
       },
     });
-  } catch {
+    if (response.status === 401 && retry) {
+      const refreshed = await refreshSession();
+      if (!refreshed) {
+        throw new Error("Your session has expired. Please sign in again.");
+      }
+      return apiFetch(path, init, false);
+    }
+    return response;
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("session has expired")) {
+      throw error;
+    }
     throw new Error(
       "GrowthOS API is offline. Start FastAPI on http://localhost:8000 and try again.",
     );
@@ -152,7 +232,10 @@ export async function generateContent(
       headers: { "Content-Type": "application/json" },
       method: "POST",
     });
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("session has expired")) {
+      throw error;
+    }
     throw new Error(
       "GrowthOS API is offline. Start FastAPI on http://localhost:8000 and try again.",
     );
@@ -219,7 +302,10 @@ export async function createResearchRun(
       headers: { "Content-Type": "application/json" },
       method: "POST",
     });
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("session has expired")) {
+      throw error;
+    }
     throw new Error(
       "GrowthOS API is offline. Start FastAPI on http://localhost:8000 and try again.",
     );

@@ -29,7 +29,10 @@ const baseUrl = process.env.SMOKE_BASE_URL || "http://localhost:3000";
 const expectedProvider = process.env.EXPECT_PROVIDER || "";
 const runOfflineCheck = process.env.RUN_OFFLINE_CHECK === "1";
 
-const browser = await chromium.launch({ channel: "msedge", headless: true });
+const launchOptions = process.env.PLAYWRIGHT_CHANNEL
+  ? { channel: process.env.PLAYWRIGHT_CHANNEL, headless: true }
+  : { headless: true };
+const browser = await chromium.launch(launchOptions);
 const context = await browser.newContext({
   viewport: { width: 1366, height: 900 },
   permissions: ["clipboard-read", "clipboard-write"],
@@ -58,6 +61,8 @@ try {
       .waitFor({ timeout: 15000 });
   } else {
     await authenticate();
+    const accessTokenBeforeRefresh = await storedAccessToken();
+    await expireStoredSession();
     await page.getByRole("link", { name: "Research Hub" }).waitFor({ timeout: 20000 });
     await page.getByRole("link", { name: "Research Hub" }).click();
     const researchHub = page.locator('section[aria-labelledby="research-hub-title"]');
@@ -68,6 +73,10 @@ try {
     await researchHub.getByLabel("Audience").fill("agency founders");
     await researchHub.getByRole("button", { name: "Run Research" }).click();
     await researchHub.getByText("Executive summary").waitFor({ timeout: 90000 });
+    const accessTokenAfterRefresh = await storedAccessToken();
+    if (accessTokenBeforeRefresh === accessTokenAfterRefresh) {
+      throw new Error("Expected expired session to refresh before authenticated request.");
+    }
 
     if (expectedProvider) {
       await researchHub
@@ -88,6 +97,15 @@ try {
     await contentStudio.getByLabel("Topic").fill("workspace-scoped content validation");
     await contentStudio.getByRole("button", { name: "Generate Content" }).click();
     await contentStudio.getByText("Ready-to-use post").waitFor({ timeout: 30000 });
+
+    await setStoredRole("viewer");
+    await page.reload({ waitUntil: "networkidle" });
+    await page.getByRole("link", { name: "Research Hub" }).click();
+    await expectButtonHidden("Run Research");
+    await expectButtonHidden("Regenerate");
+    await expectButtonHidden("Delete");
+    await expectButtonHidden("Generate Content");
+    await expectButtonHidden("Save Brand Brain");
 
     await page.setViewportSize({ width: 390, height: 844 });
     await page.getByRole("link", { name: "Research" }).waitFor({ timeout: 10000 });
@@ -119,4 +137,46 @@ async function authenticate() {
   await page
     .getByRole("heading", { name: "AI Content Studio" })
     .waitFor({ timeout: 20000 });
+}
+
+async function storedAccessToken() {
+  return page.evaluate(() => {
+    const raw = window.localStorage.getItem("growthos.session.v1");
+    return raw ? JSON.parse(raw).access_token : "";
+  });
+}
+
+async function expireStoredSession() {
+  await page.evaluate(() => {
+    const raw = window.localStorage.getItem("growthos.session.v1");
+    if (!raw) {
+      throw new Error("No stored session to expire.");
+    }
+    const session = JSON.parse(raw);
+    session.expires_at = "2000-01-01T00:00:00.000Z";
+    window.localStorage.setItem("growthos.session.v1", JSON.stringify(session));
+  });
+}
+
+async function setStoredRole(role) {
+  await page.evaluate((nextRole) => {
+    const raw = window.localStorage.getItem("growthos.session.v1");
+    if (!raw) {
+      throw new Error("No stored session to update.");
+    }
+    const session = JSON.parse(raw);
+    session.workspaces = session.workspaces.map((workspace) =>
+      workspace.id === session.active_workspace_id
+        ? { ...workspace, role: nextRole }
+        : workspace,
+    );
+    window.localStorage.setItem("growthos.session.v1", JSON.stringify(session));
+  }, role);
+}
+
+async function expectButtonHidden(name) {
+  const count = await page.getByRole("button", { name }).count();
+  if (count !== 0) {
+    throw new Error(`Expected ${name} button to be hidden for viewer role.`);
+  }
 }

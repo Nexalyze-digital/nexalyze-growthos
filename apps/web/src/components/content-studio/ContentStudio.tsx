@@ -9,7 +9,11 @@ import { GeneratedOutput } from "./GeneratedOutput";
 
 type GenerationState = "empty" | "loading" | "success" | "error";
 
-export function ContentStudio() {
+type ContentStudioProps = {
+  canEdit: boolean;
+};
+
+export function ContentStudio({ canEdit }: ContentStudioProps) {
   const [formValues, setFormValues] =
     useState<ContentFormValues>(DEFAULT_FORM_VALUES);
   const [output, setOutput] = useState<GeneratedContent | null>(null);
@@ -34,7 +38,7 @@ export function ContentStudio() {
     event?.preventDefault();
     setTopicTouched(true);
 
-    if (!canSubmit) {
+    if (!canEdit || !canSubmit) {
       return;
     }
 
@@ -79,6 +83,7 @@ export function ContentStudio() {
 
         <ContentForm
           canSubmit={canSubmit}
+          canEdit={canEdit}
           error={error}
           formValues={formValues}
           isLoading={status === "loading"}
@@ -94,6 +99,7 @@ export function ContentStudio() {
         generatedContent={output}
         isLoading={status === "loading"}
         onRegenerate={() => submitCurrentValues()}
+        canRegenerate={canEdit}
         status={status}
       />
     </section>

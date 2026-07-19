@@ -36,7 +36,7 @@ See `docs/AI/RESEARCH-HUB.md` and `docs/QA/RESEARCH-HUB.md`.
 
 ## Platform Identity And Database
 
-GrowthOS v0.5.0 adds the multi-user platform foundation:
+GrowthOS v0.5.0 added the multi-user platform foundation:
 
 - Registration, login, logout, current-user, access-token, and refresh-token workflows.
 - Organizations, workspaces, memberships, and roles.
@@ -45,9 +45,12 @@ GrowthOS v0.5.0 adds the multi-user platform foundation:
 - SQLAlchemy database persistence with Alembic migration scaffolding.
 - JSON-to-database migration utility with dry-run and backup support.
 
-For production, set `APP_ENV=production`, set a strong `JWT_SECRET_KEY`, configure `DATABASE_URL`, install the PostgreSQL driver, and complete live PostgreSQL validation before handling customer data.
+GrowthOS v0.5.1 validates the platform against local PostgreSQL and hardens session handling with automatic access-token refresh and role-aware frontend controls.
+
+For production, set `APP_ENV=production`, set a strong `JWT_SECRET_KEY`, configure `DATABASE_URL`, install the PostgreSQL driver, rehearse backup/restore, and validate the target PostgreSQL environment before handling customer data.
 
 See `docs/AI/PLATFORM-IDENTITY-DATABASE.md` and `docs/QA/PLATFORM-IDENTITY-DATABASE.md`.
+See `docs/QA/POSTGRESQL-VALIDATION.md`, `docs/DEPLOYMENT/POSTGRESQL-BACKUP-RESTORE.md`, and `docs/SECURITY/TOKEN-STORAGE-REVIEW.md` for v0.5.1 hardening guidance.
 
 ## Apps
 

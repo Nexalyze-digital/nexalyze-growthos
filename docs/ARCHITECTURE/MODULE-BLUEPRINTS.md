@@ -22,6 +22,7 @@ Each module should use the same high-level flow:
 - Dependencies: SQLAlchemy, Alembic, password hashing, token signing, CORS configuration, audit events.
 - Future AI agents: none required for core identity; future admin assistant may summarize audit and workspace activity.
 - External integrations: future SSO, email verification, MFA, and production secret management.
+- v0.5.1 hardening: PostgreSQL validation, `psycopg` driver support, pool pre-ping, backup/restore rehearsal, automatic access-token refresh, and role-aware frontend controls.
 
 ## Brand Brain
 
