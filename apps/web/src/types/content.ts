@@ -37,4 +37,6 @@ export type GeneratedContent = {
   platform: Platform;
   tone: Tone;
   provider: "ollama" | "mock-fallback" | "mock" | string;
+  brand_context_applied: boolean;
+  brand_name: string | null;
 };

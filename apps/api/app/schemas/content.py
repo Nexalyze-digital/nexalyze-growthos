@@ -50,3 +50,5 @@ class ContentGenerationResponse(BaseModel):
     platform: Platform
     tone: Tone
     provider: str
+    brand_context_applied: bool = False
+    brand_name: str | None = None

@@ -1,4 +1,5 @@
 import type { ContentFormValues, GeneratedContent } from "@/types/content";
+import type { BrandBrain, BrandBrainFormValues } from "@/types/brand";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ||
@@ -57,4 +58,36 @@ export async function generateContent(
   }
 
   return response.json() as Promise<GeneratedContent>;
+}
+
+export async function getBrands(): Promise<BrandBrain[]> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/brands`, {
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error("Unable to load Brand Brain.");
+  }
+  const payload = (await response.json()) as { brands: BrandBrain[] };
+  return payload.brands;
+}
+
+export async function saveBrand(
+  values: BrandBrainFormValues,
+  brandId?: string,
+): Promise<BrandBrain> {
+  const response = await fetch(
+    brandId ? `${API_BASE_URL}/api/v1/brands/${brandId}` : `${API_BASE_URL}/api/v1/brands`,
+    {
+      body: JSON.stringify(values),
+      headers: { "Content-Type": "application/json" },
+      method: brandId ? "PUT" : "POST",
+    },
+  );
+
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to save Brand Brain.");
+  }
+
+  return response.json() as Promise<BrandBrain>;
 }

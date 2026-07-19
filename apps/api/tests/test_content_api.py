@@ -1,4 +1,7 @@
+from pathlib import Path
+
 import httpx
+import pytest
 from fastapi.testclient import TestClient
 
 from app.api.routes import health as health_route
@@ -7,6 +10,12 @@ from app.providers.ollama import OllamaContentProvider
 from main import app
 
 client = TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def isolated_brand_store(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(settings, "brand_store_path", str(tmp_path / "brands.json"))
+    yield
 
 
 def valid_payload(**overrides):

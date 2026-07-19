@@ -11,3 +11,4 @@ build/
 .vscode/
 *.log
 *.encoding-backup
+apps/api/data/*.json
