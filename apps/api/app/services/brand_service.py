@@ -63,7 +63,9 @@ class BrandService:
         brand = self._read(lambda: self.repository.get_active())
         if brand is None:
             return BrandContextSummary()
+        return self.get_context_for_brand(brand)
 
+    def get_context_for_brand(self, brand: BrandBrain) -> BrandContextSummary:
         context_parts = [
             f"Brand name: {brand.brand_name}",
             f"Company profile: {brand.company_profile}",

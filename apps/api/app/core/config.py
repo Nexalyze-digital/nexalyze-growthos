@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     ollama_timeout_seconds: float = 90
     brand_store_path: str = "data/brand-brain.json"
     brand_context_max_characters: int = 4000
+    research_store_path: str = "data/research-runs.json"
+    research_context_max_characters: int = 4000
     cors_origins: list[str] = Field(
         default_factory=lambda: [
             "http://localhost:3000",

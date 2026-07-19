@@ -5,6 +5,7 @@ import type {
   Platform,
   Tone,
 } from "@/types/content";
+import type { ResearchDepth, ResearchRunFormValues, ResearchType } from "@/types/research";
 
 export const PLATFORM_OPTIONS = [
   "LinkedIn",
@@ -56,3 +57,31 @@ export const NAVIGATION_ITEMS = [
   { label: "Analytics" },
   { label: "Settings" },
 ] as const;
+
+export const RESEARCH_TYPE_OPTIONS = [
+  "Market Opportunity",
+  "Competitor Analysis",
+  "Content Opportunity",
+  "Industry Trends",
+  "Customer Pain Points",
+  "Strategic Research",
+] as const satisfies readonly ResearchType[];
+
+export const RESEARCH_DEPTH_OPTIONS = [
+  "Quick",
+  "Standard",
+  "Deep",
+] as const satisfies readonly ResearchDepth[];
+
+export const DEFAULT_RESEARCH_VALUES: ResearchRunFormValues = {
+  topic: "",
+  objective: "",
+  audience: "",
+  industry: "",
+  geography: "",
+  research_type: "Market Opportunity",
+  depth: "Standard",
+  instructions: "",
+  brand_id: null,
+  source_urls: [],
+};
