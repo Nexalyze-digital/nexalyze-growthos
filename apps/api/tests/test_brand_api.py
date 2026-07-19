@@ -153,13 +153,13 @@ def test_content_generation_injects_brand_brain_context():
     assert "weekly planning loop" in data["content"]
 
 
-def test_corrupted_brand_store_returns_controlled_error(tmp_path: Path):
+def test_database_backed_brand_routes_ignore_corrupted_legacy_json(tmp_path: Path):
     Path(settings.brand_store_path).write_text("{not-json", encoding="utf-8")
 
     response = client.get("/api/v1/brands")
 
-    assert response.status_code == 500
-    assert response.json()["detail"] == "Brand Brain storage is unavailable or corrupted."
+    assert response.status_code == 200
+    assert response.json()["brands"] == []
 
 
 def test_brand_context_has_priority_over_user_override():

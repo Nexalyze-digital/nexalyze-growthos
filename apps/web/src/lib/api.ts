@@ -1,6 +1,7 @@
 import type { ContentFormValues, GeneratedContent } from "@/types/content";
 import type { BrandBrain, BrandBrainFormValues } from "@/types/brand";
 import type { ResearchRun, ResearchRunFormValues } from "@/types/research";
+import type { AuthSession, LoginValues, RegisterValues } from "@/types/auth";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ||
@@ -24,6 +25,110 @@ async function parseApiError(response: Response) {
   return "";
 }
 
+const SESSION_KEY = "growthos.session.v1";
+
+export function getStoredSession(): AuthSession | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  const raw = window.localStorage.getItem(SESSION_KEY);
+  if (!raw) {
+    return null;
+  }
+  try {
+    return JSON.parse(raw) as AuthSession;
+  } catch {
+    window.localStorage.removeItem(SESSION_KEY);
+    return null;
+  }
+}
+
+export function storeSession(session: AuthSession) {
+  window.localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+}
+
+export function clearStoredSession() {
+  window.localStorage.removeItem(SESSION_KEY);
+}
+
+function authHeaders(): HeadersInit {
+  const session = getStoredSession();
+  if (!session) {
+    return {};
+  }
+  return {
+    Authorization: `Bearer ${session.access_token}`,
+    "X-Workspace-Id": session.active_workspace_id,
+  };
+}
+
+async function apiFetch(path: string, init: RequestInit = {}) {
+  try {
+    return await fetch(`${API_BASE_URL}${path}`, {
+      ...init,
+      headers: {
+        ...authHeaders(),
+        ...(init.headers || {}),
+      },
+    });
+  } catch {
+    throw new Error(
+      "GrowthOS API is offline. Start FastAPI on http://localhost:8000 and try again.",
+    );
+  }
+}
+
+export async function register(values: RegisterValues): Promise<AuthSession> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/auth/register`, {
+    body: JSON.stringify(values),
+    headers: { "Content-Type": "application/json" },
+    method: "POST",
+  });
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to create account.");
+  }
+  const session = (await response.json()) as AuthSession;
+  storeSession(session);
+  return session;
+}
+
+export async function login(values: LoginValues): Promise<AuthSession> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/auth/login`, {
+    body: JSON.stringify(values),
+    headers: { "Content-Type": "application/json" },
+    method: "POST",
+  });
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to sign in.");
+  }
+  const session = (await response.json()) as AuthSession;
+  storeSession(session);
+  return session;
+}
+
+export async function logout(): Promise<void> {
+  const session = getStoredSession();
+  if (!session) {
+    return;
+  }
+  await apiFetch("/api/v1/auth/logout", {
+    body: JSON.stringify({ refresh_token: session.refresh_token }),
+    headers: { "Content-Type": "application/json" },
+    method: "POST",
+  }).catch(() => undefined);
+  clearStoredSession();
+}
+
+export function switchWorkspace(workspaceId: string) {
+  const session = getStoredSession();
+  if (!session) {
+    return;
+  }
+  storeSession({ ...session, active_workspace_id: workspaceId });
+}
+
 export async function getHealth() {
   const response = await fetch(`${API_BASE_URL}/health`, { cache: "no-store" });
   if (!response.ok) {
@@ -42,7 +147,7 @@ export async function generateContent(
   let response: Response;
 
   try {
-    response = await fetch(`${API_BASE_URL}/api/v1/content/generate`, {
+    response = await apiFetch("/api/v1/content/generate", {
       body: JSON.stringify(values),
       headers: { "Content-Type": "application/json" },
       method: "POST",
@@ -62,7 +167,7 @@ export async function generateContent(
 }
 
 export async function getBrands(): Promise<BrandBrain[]> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/brands`, {
+  const response = await apiFetch("/api/v1/brands", {
     cache: "no-store",
   });
   if (!response.ok) {
@@ -76,8 +181,8 @@ export async function saveBrand(
   values: BrandBrainFormValues,
   brandId?: string,
 ): Promise<BrandBrain> {
-  const response = await fetch(
-    brandId ? `${API_BASE_URL}/api/v1/brands/${brandId}` : `${API_BASE_URL}/api/v1/brands`,
+  const response = await apiFetch(
+    brandId ? `/api/v1/brands/${brandId}` : "/api/v1/brands",
     {
       body: JSON.stringify(values),
       headers: { "Content-Type": "application/json" },
@@ -94,7 +199,7 @@ export async function saveBrand(
 }
 
 export async function getResearchRuns(): Promise<ResearchRun[]> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/research/runs`, {
+  const response = await apiFetch("/api/v1/research/runs", {
     cache: "no-store",
   });
   if (!response.ok) {
@@ -109,7 +214,7 @@ export async function createResearchRun(
 ): Promise<ResearchRun> {
   let response: Response;
   try {
-    response = await fetch(`${API_BASE_URL}/api/v1/research/runs`, {
+    response = await apiFetch("/api/v1/research/runs", {
       body: JSON.stringify(values),
       headers: { "Content-Type": "application/json" },
       method: "POST",
@@ -127,8 +232,8 @@ export async function createResearchRun(
 }
 
 export async function regenerateResearchRun(runId: string): Promise<ResearchRun> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/v1/research/runs/${runId}/regenerate`,
+  const response = await apiFetch(
+    `/api/v1/research/runs/${runId}/regenerate`,
     { method: "POST" },
   );
   if (!response.ok) {
@@ -139,7 +244,7 @@ export async function regenerateResearchRun(runId: string): Promise<ResearchRun>
 }
 
 export async function deleteResearchRun(runId: string): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/research/runs/${runId}`, {
+  const response = await apiFetch(`/api/v1/research/runs/${runId}`, {
     method: "DELETE",
   });
   if (!response.ok) {

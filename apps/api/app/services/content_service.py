@@ -7,12 +7,13 @@ from app.providers.base import (
 from app.providers.mock import MockContentProvider
 from app.providers.ollama import OllamaContentProvider
 from app.schemas.content import ContentGenerationRequest, ContentGenerationResponse
-from app.services.brand_service import get_brand_service
+from app.services.brand_service import BrandService, get_brand_service
 
 
 class ContentService:
-    def __init__(self, provider: ContentProvider) -> None:
+    def __init__(self, provider: ContentProvider, brand_service: BrandService | None = None) -> None:
         self.provider = provider
+        self.brand_service = brand_service
 
     def generate(
         self, request: ContentGenerationRequest
@@ -39,7 +40,8 @@ class ContentService:
     def _with_brand_context(
         self, request: ContentGenerationRequest
     ) -> tuple[ContentGenerationRequest, str | None, bool]:
-        brand_context = get_brand_service().get_active_context()
+        brand_service = self.brand_service or get_brand_service()
+        brand_context = brand_service.get_active_context()
         if not brand_context.applied:
             return request, None, False
 

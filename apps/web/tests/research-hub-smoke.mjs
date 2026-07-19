@@ -47,17 +47,17 @@ try {
   await page.goto(baseUrl, { waitUntil: "networkidle" });
 
   if (runOfflineCheck) {
-    const researchHub = page.locator('section[aria-labelledby="research-hub-title"]');
-    await researchHub.getByLabel("Topic").fill("offline research validation");
-    await researchHub
-      .getByLabel("Objective")
-      .fill("Confirm offline Research Hub error handling.");
-    await researchHub.getByRole("button", { name: "Run Research" }).click();
-    await researchHub
-      .getByText(/GrowthOS API is offline|Research Hub is unavailable|Unable to run Research Hub/i)
+    await page.getByRole("button", { name: "Register" }).click();
+    await page.getByLabel("Name").fill("Offline User");
+    await page.getByLabel("Email").fill(`offline-${Date.now()}@example.com`);
+    await page.getByLabel("Password").fill("StrongPass123");
+    await page.getByRole("button", { name: "Create account" }).click();
+    await page
+      .getByText(/Failed to fetch|Unable to create account|GrowthOS API is offline/i)
       .first()
       .waitFor({ timeout: 15000 });
   } else {
+    await authenticate();
     await page.getByRole("link", { name: "Research Hub" }).waitFor({ timeout: 20000 });
     await page.getByRole("link", { name: "Research Hub" }).click();
     const researchHub = page.locator('section[aria-labelledby="research-hub-title"]');
@@ -80,6 +80,14 @@ try {
       .click();
     await researchHub.getByRole("button", { name: "Regenerate" }).click();
     await researchHub.getByText("Executive summary").waitFor({ timeout: 90000 });
+    await researchHub.getByText("Saved research runs").waitFor({ timeout: 10000 });
+    await researchHub.getByRole("button", { name: "Delete" }).click();
+    await researchHub.getByText("Run a research request").waitFor({ timeout: 10000 });
+
+    const contentStudio = page.locator('section[aria-labelledby="content-studio-title"]');
+    await contentStudio.getByLabel("Topic").fill("workspace-scoped content validation");
+    await contentStudio.getByRole("button", { name: "Generate Content" }).click();
+    await contentStudio.getByText("Ready-to-use post").waitFor({ timeout: 30000 });
 
     await page.setViewportSize({ width: 390, height: 844 });
     await page.getByRole("link", { name: "Research" }).waitFor({ timeout: 10000 });
@@ -97,4 +105,18 @@ try {
   console.log("Research Hub smoke passed");
 } finally {
   await browser.close();
+}
+
+async function authenticate() {
+  const email = `smoke-${Date.now()}@example.com`;
+  await page.getByRole("button", { name: "Register" }).click();
+  await page.getByLabel("Name").fill("Smoke User");
+  await page.getByLabel("Email").fill(email);
+  await page.getByLabel("Password").fill("StrongPass123");
+  await page.getByLabel("Organization").fill("Smoke Organization");
+  await page.getByLabel("Workspace").fill("Smoke Workspace");
+  await page.getByRole("button", { name: "Create account" }).click();
+  await page
+    .getByRole("heading", { name: "AI Content Studio" })
+    .waitFor({ timeout: 20000 });
 }

@@ -7,6 +7,11 @@ class Settings(BaseSettings):
     version: str = "0.1.0"
     ai_provider: str = "mock"
     ai_fallback_provider: str = "mock"
+    database_url: str = "sqlite:///data/growthos.db"
+    jwt_secret_key: str = "local-development-secret-change-me"
+    access_token_expire_minutes: int = 30
+    refresh_token_expire_days: int = 14
+    auth_rate_limit_per_minute: int = 10
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "llama3.2:latest"
     ollama_timeout_seconds: float = 90

@@ -44,3 +44,29 @@ Research Hub is the v0.4.0 enterprise capability for structured AI-generated res
 - Source notes distinguish user-supplied URLs from AI-generated synthesis.
 - Existing Brand Brain and AI Content Studio workflows continue to work.
 - The UI remains responsive and accessible across desktop and mobile.
+
+## Platform Identity, Workspaces, And Database
+
+GrowthOS v0.5.0 establishes the multi-user platform foundation required before Publishing Engine and other collaborative modules.
+
+### Requirements
+
+- Support user registration, login, logout, current user, access tokens, refresh tokens, token expiry, password hashing, password validation, and account activation status.
+- Support organizations, workspaces, memberships, and roles: owner, admin, editor, viewer.
+- Protect frontend routes behind authentication.
+- Persist session state locally in the browser.
+- Scope Brand Brain, Research Hub, and AI context lookup to the active workspace.
+- Add SQLAlchemy 2.x persistence and Alembic migration scaffolding.
+- Support SQLite for local/test usage and PostgreSQL configuration for production.
+- Provide JSON migration dry-run and live migration with backup.
+- Add audit events for login and data changes.
+- Preserve Ollama and mock fallback provider support.
+
+### Acceptance Criteria
+
+- Users can register, log in, refresh tokens, log out, and view current-user/workspace context.
+- Workspace members can only access data in their authorized workspace.
+- Viewers cannot perform write actions.
+- Brand Brain and Research Hub remain functional after database migration.
+- Existing AI Content Studio workflows continue to work with workspace-scoped Brand Brain context.
+- Backend tests, frontend lint, frontend build, Playwright smoke, and migration validation pass.

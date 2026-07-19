@@ -86,6 +86,8 @@ Current Python packages in `requirements.txt`:
 - `pydantic-settings`
 - `pytest`
 - `httpx`
+- `SQLAlchemy`
+- `alembic`
 
 ## Backend Freshness
 
@@ -95,6 +97,12 @@ Current Python packages in `requirements.txt`:
 | `pydantic_core` | 2.46.4 | 2.47.0 | Patch update candidate through the owning `pydantic` dependency. |
 
 No duplicate backend functionality was found in the explicit requirements list.
+
+## v0.5.0 Backend Additions
+
+- `SQLAlchemy` was added for the platform database foundation and workspace-scoped repositories.
+- `alembic` was added for versioned schema migration scaffolding.
+- No separate JWT or password-hashing dependency was added in v0.5.0; GrowthOS uses Python standard-library HMAC token signing and PBKDF2-HMAC-SHA256 password hashing for the local platform foundation.
 
 ## Backend Security
 
