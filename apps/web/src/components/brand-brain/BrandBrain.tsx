@@ -38,10 +38,12 @@ const emptyBrand: BrandBrainFormValues = {
 };
 
 type SaveState = "idle" | "loading" | "saved" | "error";
+type LoadState = "loading" | "ready" | "error";
 
 export function BrandBrain() {
   const [brandId, setBrandId] = useState<string | undefined>();
   const [formValues, setFormValues] = useState<BrandBrainFormValues>(emptyBrand);
+  const [loadStatus, setLoadStatus] = useState<LoadState>("loading");
   const [status, setStatus] = useState<SaveState>("idle");
   const [error, setError] = useState("");
 
@@ -51,14 +53,19 @@ export function BrandBrain() {
     getBrands()
       .then((brands) => {
         if (!active || brands.length === 0) {
+          if (active) {
+            setLoadStatus("ready");
+          }
           return;
         }
         const [brand] = brands;
         setBrandId(brand.id);
         setFormValues(toFormValues(brand));
+        setLoadStatus("ready");
       })
       .catch(() => {
         if (active) {
+          setLoadStatus("error");
           setError("Brand Brain is unavailable until the API is running.");
         }
       });
@@ -126,6 +133,12 @@ export function BrandBrain() {
         </p>
 
         <form className="mt-6 space-y-5" onSubmit={submit}>
+          {loadStatus === "loading" ? (
+            <p className="rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-slate-300">
+              Loading Brand Brain...
+            </p>
+          ) : null}
+
           <Card className="grid gap-4 md:grid-cols-2">
             <Field
               id="brand-name"
@@ -337,12 +350,14 @@ export function BrandBrain() {
               onChange={(value) => update("social_media_urls", value)}
             />
             <ListField
-              label="Languages and regions"
-              value={[...formValues.languages, ...formValues.regional_preferences]}
-              onChange={(value) => {
-                update("languages", value.slice(0, 3));
-                update("regional_preferences", value.slice(3));
-              }}
+              label="Languages"
+              value={formValues.languages}
+              onChange={(value) => update("languages", value)}
+            />
+            <ListField
+              label="Regional preferences"
+              value={formValues.regional_preferences}
+              onChange={(value) => update("regional_preferences", value)}
             />
           </Card>
 
@@ -381,7 +396,14 @@ export function BrandBrain() {
         </div>
 
         <div className="mt-6">
-          <div className="h-2 overflow-hidden rounded-full bg-white/10">
+          <div
+            aria-label="Brand Brain context readiness"
+            aria-valuemax={100}
+            aria-valuemin={0}
+            aria-valuenow={readiness}
+            className="h-2 overflow-hidden rounded-full bg-white/10"
+            role="progressbar"
+          >
             <div
               className="h-full rounded-full bg-emerald-300"
               style={{ width: `${readiness}%` }}

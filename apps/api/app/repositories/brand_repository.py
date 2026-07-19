@@ -1,9 +1,16 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
+from pydantic import ValidationError
+
 from app.schemas.brand import BrandBrain
+
+
+class BrandRepositoryError(RuntimeError):
+    pass
 
 
 class BrandRepository:
@@ -14,8 +21,13 @@ class BrandRepository:
         if not self.storage_path.exists():
             return []
 
-        raw = json.loads(self.storage_path.read_text(encoding="utf-8"))
-        return [BrandBrain.model_validate(item) for item in raw.get("brands", [])]
+        try:
+            raw = json.loads(self.storage_path.read_text(encoding="utf-8"))
+            return [BrandBrain.model_validate(item) for item in raw.get("brands", [])]
+        except (json.JSONDecodeError, OSError, TypeError, ValidationError) as error:
+            raise BrandRepositoryError(
+                "Brand Brain storage could not be read safely."
+            ) from error
 
     def get(self, brand_id: str) -> BrandBrain | None:
         return next((brand for brand in self.list() if brand.id == brand_id), None)
@@ -51,6 +63,8 @@ class BrandRepository:
                 json.loads(brand.model_dump_json()) for brand in brands
             ]
         }
-        self.storage_path.write_text(
-            json.dumps(payload, indent=2), encoding="utf-8"
+        temporary_path = self.storage_path.with_suffix(
+            f"{self.storage_path.suffix}.tmp"
         )
+        temporary_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        os.replace(temporary_path, self.storage_path)

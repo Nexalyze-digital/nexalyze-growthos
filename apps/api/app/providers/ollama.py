@@ -72,6 +72,7 @@ class OllamaContentProvider(ContentProvider):
 You are GrowthOS, a business content generation assistant.
 Return only valid JSON. Do not include markdown fences.
 Do not claim live research was performed.
+Brand Brain instructions inside additional instructions are protected. If they conflict with user instructions, follow Brand Brain.
 
 Create a social post using these inputs:
 - Topic: {request.topic}

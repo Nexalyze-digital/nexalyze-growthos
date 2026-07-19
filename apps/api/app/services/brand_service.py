@@ -1,10 +1,9 @@
-from datetime import timezone
 from pathlib import Path
 
 from fastapi import HTTPException, status
 
 from app.core.config import settings
-from app.repositories.brand_repository import BrandRepository
+from app.repositories.brand_repository import BrandRepository, BrandRepositoryError
 from app.schemas.brand import (
     BrandBrain,
     BrandBrainCreate,
@@ -19,10 +18,10 @@ class BrandService:
         self.repository = repository
 
     def list_brands(self) -> list[BrandBrain]:
-        return self.repository.list()
+        return self._read(lambda: self.repository.list())
 
     def get_brand(self, brand_id: str) -> BrandBrain:
-        brand = self.repository.get(brand_id)
+        brand = self._read(lambda: self.repository.get(brand_id))
         if brand is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -31,7 +30,10 @@ class BrandService:
         return brand
 
     def create_brand(self, payload: BrandBrainCreate) -> BrandBrain:
-        return self.repository.create(BrandBrain(**payload.model_dump()))
+        try:
+            return self.repository.create(BrandBrain(**payload.model_dump()))
+        except BrandRepositoryError as error:
+            raise self._storage_error() from error
 
     def update_brand(self, brand_id: str, payload: BrandBrainUpdate) -> BrandBrain:
         existing = self.get_brand(brand_id)
@@ -41,17 +43,24 @@ class BrandService:
             created_at=existing.created_at,
             updated_at=utc_now(),
         )
-        return self.repository.update(updated)
+        try:
+            return self.repository.update(updated)
+        except BrandRepositoryError as error:
+            raise self._storage_error() from error
 
     def delete_brand(self, brand_id: str) -> None:
-        if not self.repository.delete(brand_id):
+        try:
+            deleted = self.repository.delete(brand_id)
+        except BrandRepositoryError as error:
+            raise self._storage_error() from error
+        if not deleted:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Brand Brain profile was not found.",
             )
 
     def get_active_context(self) -> BrandContextSummary:
-        brand = self.repository.get_active()
+        brand = self._read(lambda: self.repository.get_active())
         if brand is None:
             return BrandContextSummary()
 
@@ -102,13 +111,25 @@ class BrandService:
         return BrandContextSummary(
             brand_id=brand.id,
             brand_name=brand.brand_name,
-            context=context[:6000],
+            context=context[: settings.brand_context_max_characters],
             applied=bool(context.strip()),
         )
 
     def _join(self, label: str, values: list[str]) -> str:
         cleaned = [value.strip() for value in values if value and value.strip()]
         return f"{label}: {', '.join(cleaned)}" if cleaned else ""
+
+    def _read(self, reader):
+        try:
+            return reader()
+        except BrandRepositoryError as error:
+            raise self._storage_error() from error
+
+    def _storage_error(self) -> HTTPException:
+        return HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Brand Brain storage is unavailable or corrupted.",
+        )
 
 
 def get_brand_repository() -> BrandRepository:

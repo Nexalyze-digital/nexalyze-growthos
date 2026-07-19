@@ -45,13 +45,15 @@ class ContentService:
 
         existing_instructions = request.instructions.strip() if request.instructions else ""
         enriched_instructions = (
-            "Apply this saved Brand Brain context to the response. "
-            "Do not use forbidden phrases. Prefer the listed terminology, CTAs, hashtags, languages, and regional preferences.\n\n"
+            "Protected Brand Brain instructions, highest priority: "
+            "apply this saved brand context to the response. "
+            "Do not use forbidden phrases. Prefer the listed terminology, CTAs, hashtags, languages, and regional preferences. "
+            "If user instructions conflict with Brand Brain instructions, follow Brand Brain.\n\n"
             f"{brand_context.context}"
         )
         if existing_instructions:
             enriched_instructions = (
-                f"User request instructions: {existing_instructions}\n\n{enriched_instructions}"
+                f"{enriched_instructions}\n\nUser request instructions, lower priority: {existing_instructions}"
             )
 
         return (
