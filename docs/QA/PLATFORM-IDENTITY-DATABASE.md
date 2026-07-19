@@ -72,4 +72,4 @@ Validated flows:
 ## Known Test Limitations
 
 - Playwright smoke is still run as a local script rather than CI.
-- SQLite is used for automated tests; production PostgreSQL validation requires environment-specific credentials.
+- SQLite is used for automated tests; production PostgreSQL validation requires environment-specific credentials and must be completed before customer-data deployment.

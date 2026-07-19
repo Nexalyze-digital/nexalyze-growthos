@@ -45,7 +45,7 @@ GrowthOS v0.5.0 adds the multi-user platform foundation:
 - SQLAlchemy database persistence with Alembic migration scaffolding.
 - JSON-to-database migration utility with dry-run and backup support.
 
-For production, set `JWT_SECRET_KEY`, configure `DATABASE_URL`, and use PostgreSQL.
+For production, set `APP_ENV=production`, set a strong `JWT_SECRET_KEY`, configure `DATABASE_URL`, install the PostgreSQL driver, and complete live PostgreSQL validation before handling customer data.
 
 See `docs/AI/PLATFORM-IDENTITY-DATABASE.md` and `docs/QA/PLATFORM-IDENTITY-DATABASE.md`.
 

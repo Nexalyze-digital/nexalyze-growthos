@@ -1,10 +1,11 @@
-from pydantic import Field
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
     app_name: str = "Nexalyze GrowthOS API"
     version: str = "0.1.0"
+    app_env: str = "local"
     ai_provider: str = "mock"
     ai_fallback_provider: str = "mock"
     database_url: str = "sqlite:///data/growthos.db"
@@ -25,6 +26,16 @@ class Settings(BaseSettings):
             "http://127.0.0.1:3000",
         ]
     )
+
+    @model_validator(mode="after")
+    def validate_production_secrets(self) -> "Settings":
+        production_envs = {"production", "prod"}
+        default_secret = "local-development-secret-change-me"
+        if self.app_env.lower() in production_envs and (
+            self.jwt_secret_key == default_secret or len(self.jwt_secret_key) < 32
+        ):
+            raise ValueError("JWT_SECRET_KEY must be set to a strong production secret.")
+        return self
 
     model_config = SettingsConfigDict(
         env_file=".env",

@@ -43,7 +43,12 @@ class JsonMigrationService:
                 backup_paths=[],
             )
 
+        brands_migrated = 0
+        seen_brand_ids: set[str] = set()
         for brand in brands:
+            if brand.id in seen_brand_ids:
+                continue
+            seen_brand_ids.add(brand.id)
             if not self.db.get(BrandRecord, brand.id):
                 self.db.add(
                     BrandRecord(
@@ -54,7 +59,13 @@ class JsonMigrationService:
                         updated_at=brand.updated_at,
                     )
                 )
+                brands_migrated += 1
+        research_runs_migrated = 0
+        seen_run_ids: set[str] = set()
         for run in research_runs:
+            if run.id in seen_run_ids:
+                continue
+            seen_run_ids.add(run.id)
             if not self.db.get(ResearchRecord, run.id):
                 self.db.add(
                     ResearchRecord(
@@ -65,14 +76,19 @@ class JsonMigrationService:
                         updated_at=run.updated_at,
                     )
                 )
-        self.db.commit()
+                research_runs_migrated += 1
+        try:
+            self.db.commit()
+        except Exception:
+            self.db.rollback()
+            raise
         return MigrationResult(
             dry_run=False,
             workspace_id=self.workspace_id,
             brands_found=len(brands),
             research_runs_found=len(research_runs),
-            brands_migrated=len(brands),
-            research_runs_migrated=len(research_runs),
+            brands_migrated=brands_migrated,
+            research_runs_migrated=research_runs_migrated,
             backup_paths=backup_paths,
         )
 

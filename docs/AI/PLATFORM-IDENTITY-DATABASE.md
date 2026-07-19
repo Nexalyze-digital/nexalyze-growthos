@@ -45,13 +45,25 @@ The default local database URL is:
 DATABASE_URL=sqlite:///data/growthos.db
 ```
 
-Production should use PostgreSQL:
+Production should use PostgreSQL after environment-specific validation:
 
 ```powershell
 DATABASE_URL=postgresql+psycopg://user:password@host:5432/growthos
 ```
 
-PostgreSQL driver installation and production secret management are deployment concerns and should not commit credentials.
+PostgreSQL driver installation, production secret management, migration rehearsal, backup/restore rehearsal, and connection-pool validation are deployment concerns and should not commit credentials.
+
+## PostgreSQL Validation Checklist
+
+- Install the production PostgreSQL driver in the deployment environment.
+- Set `APP_ENV=production`.
+- Set a strong `JWT_SECRET_KEY` outside source control.
+- Set `DATABASE_URL` to the target PostgreSQL database.
+- Run `alembic upgrade head` against a fresh PostgreSQL database.
+- Run the backend test suite against a disposable PostgreSQL database.
+- Rehearse JSON migration dry-run and live migration on a backup copy.
+- Confirm rollback using database backup/restore procedures.
+- Confirm API startup does not rely on SQLite-only behavior.
 
 ## Migration
 
