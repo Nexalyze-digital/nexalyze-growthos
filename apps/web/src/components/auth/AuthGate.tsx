@@ -1,10 +1,11 @@
 "use client";
 
-import { FormEvent, ReactNode, useState } from "react";
+import { FormEvent, ReactNode, useEffect, useState } from "react";
 import { LogIn, UserPlus } from "lucide-react";
 import {
   getStoredSession,
   login,
+  onStoredSessionChange,
   register,
   storeSession,
 } from "@/lib/api";
@@ -18,7 +19,7 @@ type AuthGateProps = {
 };
 
 export function AuthGate({ children }: AuthGateProps) {
-  const [session, setSession] = useState<AuthSession | null>(() => getStoredSession());
+  const [session, setSession] = useState<AuthSession | null>(null);
   const [mode, setMode] = useState<"login" | "register">("login");
   const [values, setValues] = useState({
     email: "",
@@ -29,6 +30,11 @@ export function AuthGate({ children }: AuthGateProps) {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    window.queueMicrotask(() => setSession(getStoredSession()));
+    return onStoredSessionChange(setSession);
+  }, []);
 
   function update(key: keyof typeof values, value: string) {
     setValues((current) => ({ ...current, [key]: value }));

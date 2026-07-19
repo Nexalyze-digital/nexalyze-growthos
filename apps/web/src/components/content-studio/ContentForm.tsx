@@ -16,6 +16,7 @@ import { GenerationStatus } from "./GenerationStatus";
 
 type ContentFormProps = {
   canSubmit: boolean;
+  canEdit: boolean;
   error: string;
   formValues: ContentFormValues;
   isLoading: boolean;
@@ -27,6 +28,7 @@ type ContentFormProps = {
 
 export function ContentForm({
   canSubmit,
+  canEdit,
   error,
   formValues,
   isLoading,
@@ -97,9 +99,11 @@ export function ContentForm({
 
         <GenerationStatus error={error} isLoading={isLoading} />
 
-        <Button disabled={!canSubmit} icon={Sparkles} type="submit">
-          {isLoading ? "Generating content..." : "Generate Content"}
-        </Button>
+        {canEdit ? (
+          <Button disabled={!canSubmit} icon={Sparkles} type="submit">
+            {isLoading ? "Generating content..." : "Generate Content"}
+          </Button>
+        ) : null}
       </form>
     </Card>
   );

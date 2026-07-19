@@ -40,7 +40,11 @@ const emptyBrand: BrandBrainFormValues = {
 type SaveState = "idle" | "loading" | "saved" | "error";
 type LoadState = "loading" | "ready" | "error";
 
-export function BrandBrain() {
+type BrandBrainProps = {
+  canEdit: boolean;
+};
+
+export function BrandBrain({ canEdit }: BrandBrainProps) {
   const [brandId, setBrandId] = useState<string | undefined>();
   const [formValues, setFormValues] = useState<BrandBrainFormValues>(emptyBrand);
   const [loadStatus, setLoadStatus] = useState<LoadState>("loading");
@@ -96,6 +100,9 @@ export function BrandBrain() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!canEdit) {
+      return;
+    }
     setStatus("loading");
     setError("");
 
@@ -367,18 +374,20 @@ export function BrandBrain() {
             </p>
           ) : null}
 
-          <Button
-            className="sm:w-auto"
-            disabled={status === "loading"}
-            icon={Save}
-            type="submit"
-          >
-            {status === "loading"
-              ? "Saving"
-              : status === "saved"
-                ? "Saved"
-                : "Save Brand Brain"}
-          </Button>
+          {canEdit ? (
+            <Button
+              className="sm:w-auto"
+              disabled={status === "loading"}
+              icon={Save}
+              type="submit"
+            >
+              {status === "loading"
+                ? "Saving"
+                : status === "saved"
+                  ? "Saved"
+                  : "Save Brand Brain"}
+            </Button>
+          ) : null}
         </form>
       </div>
 

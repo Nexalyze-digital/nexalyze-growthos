@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     ai_provider: str = "mock"
     ai_fallback_provider: str = "mock"
     database_url: str = "sqlite:///data/growthos.db"
+    database_pool_size: int = 5
+    database_max_overflow: int = 10
+    database_pool_pre_ping: bool = True
     jwt_secret_key: str = "local-development-secret-change-me"
     access_token_expire_minutes: int = 30
     refresh_token_expire_days: int = 14

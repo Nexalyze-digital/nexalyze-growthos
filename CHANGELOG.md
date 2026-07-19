@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented here.
 
+## 0.5.1
+
+- Validated Alembic upgrade, downgrade, and re-upgrade against local PostgreSQL 17.
+- Added PostgreSQL driver support and SQLAlchemy pool pre-ping configuration.
+- Added PostgreSQL backup and restore helper scripts for test databases.
+- Hardened frontend session handling with automatic access-token refresh and one-time request retry.
+- Added role-aware frontend hiding for viewer write controls.
+- Added CI-ready Playwright smoke workflow using mock provider and local test database.
+- Documented PostgreSQL validation, backup/restore, token-storage risks, release review, and handoff.
+
 ## 0.5.0
 
 - Added authentication with registration, login, logout, access tokens, refresh tokens, password hashing, and current-user endpoint.

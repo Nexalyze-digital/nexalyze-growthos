@@ -15,6 +15,7 @@ import {
   logout,
   switchWorkspace,
 } from "@/lib/api";
+import { activeWorkspaceRole, canEditWorkspace } from "@/lib/permissions";
 import type { AuthSession } from "@/types/auth";
 
 export default function HomePage() {
@@ -38,6 +39,8 @@ function AuthenticatedHome({
   onSessionChange: (session: AuthSession) => void;
 }) {
   const [session, setSession] = useState(initialSession);
+  const role = activeWorkspaceRole(session);
+  const canEdit = canEditWorkspace(role);
 
   function handleWorkspaceChange(workspaceId: string) {
     switchWorkspace(workspaceId);
@@ -64,9 +67,9 @@ function AuthenticatedHome({
         <DashboardHero />
         <DashboardStats />
         <QuickActions />
-        <BrandBrain />
-        <ResearchHub />
-        <ContentStudio />
+        <BrandBrain canEdit={canEdit} />
+        <ResearchHub canEdit={canEdit} />
+        <ContentStudio canEdit={canEdit} />
       </div>
     </AppShell>
   );
