@@ -110,6 +110,7 @@ export function ResearchHub() {
       return;
     }
     setStatus("loading");
+    setError("");
     try {
       const run = await regenerateResearchRun(activeRun.id);
       setActiveRun(run);
@@ -122,11 +123,21 @@ export function ResearchHub() {
   }
 
   async function removeRun(runId: string) {
-    await deleteResearchRun(runId);
-    setHistory((current) => current.filter((item) => item.id !== runId));
-    if (activeRun?.id === runId) {
-      setActiveRun(null);
-      setStatus("empty");
+    setError("");
+    try {
+      await deleteResearchRun(runId);
+      setHistory((current) => current.filter((item) => item.id !== runId));
+      if (activeRun?.id === runId) {
+        setActiveRun(null);
+        setStatus("empty");
+      }
+    } catch (requestError) {
+      setStatus("error");
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Unable to delete research.",
+      );
     }
   }
 

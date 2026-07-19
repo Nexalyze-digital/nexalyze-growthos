@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+from uuid import uuid4
 
 from pydantic import ValidationError
 
@@ -50,8 +51,16 @@ class ResearchRepository:
         return True
 
     def _write(self, runs: list[ResearchRun]) -> None:
-        self.storage_path.parent.mkdir(parents=True, exist_ok=True)
-        payload = {"runs": [json.loads(run.model_dump_json()) for run in runs]}
-        temporary_path = self.storage_path.with_suffix(f"{self.storage_path.suffix}.tmp")
-        temporary_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-        os.replace(temporary_path, self.storage_path)
+        temporary_path = self.storage_path.with_name(
+            f"{self.storage_path.name}.{uuid4().hex}.tmp"
+        )
+        try:
+            self.storage_path.parent.mkdir(parents=True, exist_ok=True)
+            payload = {"runs": [json.loads(run.model_dump_json()) for run in runs]}
+            temporary_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+            os.replace(temporary_path, self.storage_path)
+        except OSError as error:
+            raise ResearchRepositoryError("Research storage could not be written safely.") from error
+        finally:
+            if temporary_path.exists():
+                temporary_path.unlink(missing_ok=True)

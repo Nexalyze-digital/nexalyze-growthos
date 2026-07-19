@@ -164,6 +164,14 @@ def test_corrupted_research_store_returns_controlled_error():
     assert response.json()["detail"] == "Research storage is unavailable or corrupted."
 
 
+def test_research_write_cleans_temporary_files():
+    create_research_run()
+
+    temporary_files = list(Path(settings.research_store_path).parent.glob("*.tmp"))
+
+    assert temporary_files == []
+
+
 def test_source_url_preserved_only_when_supplied():
     data = create_research_run(source_urls=["https://example.com/research-note"])
 
