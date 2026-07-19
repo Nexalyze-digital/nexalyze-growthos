@@ -1,9 +1,10 @@
-import { Home, PenLine, Settings } from "lucide-react";
+import { Brain, Home, PenLine, Search } from "lucide-react";
 
 const items = [
-  { icon: Home, label: "Dashboard", disabled: true },
-  { icon: PenLine, label: "Studio", disabled: false },
-  { icon: Settings, label: "Settings", disabled: true },
+  { href: "#top", icon: Home, label: "Home" },
+  { href: "#brand-brain-title", icon: Brain, label: "Brand" },
+  { href: "#research-hub-title", icon: Search, label: "Research" },
+  { href: "#content-studio-title", icon: PenLine, label: "Studio" },
 ];
 
 export function MobileNavigation() {
@@ -12,22 +13,16 @@ export function MobileNavigation() {
       aria-label="Mobile navigation"
       className="sticky bottom-0 z-30 border-t border-white/10 bg-[#050812]/95 px-4 py-2 backdrop-blur lg:hidden"
     >
-      <div className="grid grid-cols-3 gap-2">
-        {items.map(({ icon: Icon, label, disabled }) => (
-          <button
+      <div className="grid grid-cols-4 gap-2">
+        {items.map(({ href, icon: Icon, label }) => (
+          <a
             key={label}
-            aria-current={!disabled ? "page" : undefined}
-            className={
-              disabled
-                ? "flex flex-col items-center gap-1 rounded-lg px-3 py-2 text-xs text-slate-500"
-                : "flex flex-col items-center gap-1 rounded-lg bg-cyan-400 px-3 py-2 text-xs font-semibold text-slate-950"
-            }
-            disabled={disabled}
-            type="button"
+            className="flex flex-col items-center gap-1 rounded-lg px-2 py-2 text-xs font-medium text-slate-300 transition hover:bg-white/[0.06] focus:outline-none focus:ring-2 focus:ring-cyan-300"
+            href={href}
           >
             <Icon className="h-4 w-4" aria-hidden="true" />
             {label}
-          </button>
+          </a>
         ))}
       </div>
     </nav>

@@ -26,11 +26,11 @@ Each module should use the same high-level flow:
 ## Research Hub
 
 - Responsibilities: market research, competitor research, source summaries, citation-ready findings, content opportunities.
-- APIs: `POST /api/v1/research/runs`, `GET /api/v1/research/runs/{id}`, `POST /api/v1/research/summarize`.
-- Data flow: topic and source set enters backend; connectors gather material; AI summarizes and extracts findings; artifacts are stored.
-- Dependencies: provider layer, browser automation, retrieval/indexing, source validation.
+- APIs: `POST /api/v1/research/runs`, `GET /api/v1/research/runs`, `GET /api/v1/research/runs/{id}`, `DELETE /api/v1/research/runs/{id}`, `POST /api/v1/research/runs/{id}/regenerate`.
+- Data flow: topic and optional user-supplied source URLs enter backend; Brand Brain context is injected when selected; AI synthesizes structured findings; artifacts are stored in JSON for v0.4.0.
+- Dependencies: Brand Brain, provider layer, JSON persistence, source-note validation.
 - Future AI agents: researcher, source evaluator, insight synthesizer.
-- External integrations: web search, browser automation, file conversion, vector search.
+- External integrations: future web search, Crawl4AI, Playwright, RSS, file conversion, and vector search. None are active in v0.4.0.
 
 ## Publishing
 

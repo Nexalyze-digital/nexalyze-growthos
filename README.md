@@ -24,6 +24,16 @@ The FastAPI backend exposes Brand Brain CRUD endpoints under `/api/v1/brands` wi
 
 See `docs/AI/BRAND-BRAIN.md` for the architecture, data model, prompt injection strategy, and migration path.
 
+## Research Hub
+
+Research Hub creates structured AI-generated research synthesis from a user brief and optional Brand Brain context. It supports market opportunity, competitor, content, industry trend, customer pain point, and strategic research workflows.
+
+The v0.4.0 implementation does not browse the live web, call external search APIs, scrape websites, or verify sources. Source URLs are preserved only when supplied by the user, and every run includes source notes that disclose whether live research was performed.
+
+Research Hub uses the same local provider posture as Content Studio: Ollama when configured, deterministic mock output for tests/offline use, and mock fallback when the local provider is unavailable.
+
+See `docs/AI/RESEARCH-HUB.md` and `docs/QA/RESEARCH-HUB.md`.
+
 ## Apps
 
 - apps/api - FastAPI backend

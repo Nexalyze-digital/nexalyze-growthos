@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented here.
 
+## 0.4.0
+
+- Added Research Hub core for structured AI-generated research synthesis.
+- Added research schemas, CRUD/regenerate API, service layer, provider layer, and JSON persistence.
+- Added Ollama and deterministic mock research providers with mock fallback.
+- Added Brand Brain context injection for research runs.
+- Added source-note handling that discloses no live web research is performed.
+- Added responsive Research Hub UI with history, results, copy, regenerate, delete, provider badges, and fallback notices.
+- Added backend tests and QA documentation for Research Hub.
+
 ## 0.3.0
 
 - Added Brand Brain core with JSON-backed persistence.

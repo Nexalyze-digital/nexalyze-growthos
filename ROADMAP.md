@@ -5,7 +5,7 @@
 - AI Content Studio: Complete
 - Local AI Integration: Complete
 - Brand Brain: Complete
-- Research Hub: Next
+- Research Hub: In Progress
 - Publishing Engine: Planned
 - Website Intelligence: Planned
 - Lead Intelligence Integration: Planned
@@ -26,7 +26,7 @@
 - Database integration
 - Approval workflow
 - Real dashboard metrics
-- Research Hub
+- Research Hub core
 
 ## Sprint 4
 - Publishing Engine

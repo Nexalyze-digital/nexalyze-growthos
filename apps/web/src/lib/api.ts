@@ -1,5 +1,6 @@
 import type { ContentFormValues, GeneratedContent } from "@/types/content";
 import type { BrandBrain, BrandBrainFormValues } from "@/types/brand";
+import type { ResearchRun, ResearchRunFormValues } from "@/types/research";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ||
@@ -90,4 +91,59 @@ export async function saveBrand(
   }
 
   return response.json() as Promise<BrandBrain>;
+}
+
+export async function getResearchRuns(): Promise<ResearchRun[]> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/research/runs`, {
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error("Unable to load Research Hub history.");
+  }
+  const payload = (await response.json()) as { runs: ResearchRun[] };
+  return payload.runs;
+}
+
+export async function createResearchRun(
+  values: ResearchRunFormValues,
+): Promise<ResearchRun> {
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}/api/v1/research/runs`, {
+      body: JSON.stringify(values),
+      headers: { "Content-Type": "application/json" },
+      method: "POST",
+    });
+  } catch {
+    throw new Error(
+      "GrowthOS API is offline. Start FastAPI on http://localhost:8000 and try again.",
+    );
+  }
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to run Research Hub.");
+  }
+  return response.json() as Promise<ResearchRun>;
+}
+
+export async function regenerateResearchRun(runId: string): Promise<ResearchRun> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/research/runs/${runId}/regenerate`,
+    { method: "POST" },
+  );
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to regenerate research.");
+  }
+  return response.json() as Promise<ResearchRun>;
+}
+
+export async function deleteResearchRun(runId: string): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/research/runs/${runId}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to delete research.");
+  }
 }
