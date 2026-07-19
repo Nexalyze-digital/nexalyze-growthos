@@ -4,11 +4,12 @@
 - Engineering foundation: complete
 - AI Content Studio: Complete
 - Local AI Integration: Complete
-- Brand Brain: In Progress
-- Research Hub: Planned
+- Brand Brain: Complete
+- Research Hub: Next
 - Publishing Engine: Planned
 - Website Intelligence: Planned
 - Lead Intelligence Integration: Planned
+- Workflow Automation: Planned
 
 ## Sprint 1
 - FastAPI backend
