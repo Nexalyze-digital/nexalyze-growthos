@@ -232,7 +232,10 @@ export async function generateContent(
       headers: { "Content-Type": "application/json" },
       method: "POST",
     });
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("session has expired")) {
+      throw error;
+    }
     throw new Error(
       "GrowthOS API is offline. Start FastAPI on http://localhost:8000 and try again.",
     );
@@ -299,7 +302,10 @@ export async function createResearchRun(
       headers: { "Content-Type": "application/json" },
       method: "POST",
     });
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("session has expired")) {
+      throw error;
+    }
     throw new Error(
       "GrowthOS API is offline. Start FastAPI on http://localhost:8000 and try again.",
     );

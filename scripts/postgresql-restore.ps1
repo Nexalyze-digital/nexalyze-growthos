@@ -23,4 +23,4 @@ if ($LASTEXITCODE -ne 0) {
   throw "PostgreSQL restore failed with exit code $LASTEXITCODE."
 }
 
-"PostgreSQL restore completed for $DatabaseUrl"
+"PostgreSQL restore completed."
