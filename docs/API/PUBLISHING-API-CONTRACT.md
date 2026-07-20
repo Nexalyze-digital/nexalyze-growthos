@@ -77,6 +77,8 @@ Soft delete a draft.
 
 Required role: admin, owner for other users' drafts; editor only for own draft before approval.
 
+Scope note: archive/restore is the primary user-facing removal workflow. Soft delete should be implemented as a protected cleanup endpoint only if needed for v0.6.0; otherwise defer it and keep the contract reserved.
+
 ### `GET /drafts/{draft_id}/versions`
 
 List version history.
@@ -127,6 +129,8 @@ Schedule approved draft.
 
 Required role: admin, owner.
 
+Scheduling pins the latest approved `draft_version_id` so later edits cannot silently change scheduled or queued content.
+
 ### `PUT /schedules/{schedule_id}`
 
 Reschedule.
@@ -159,6 +163,8 @@ Query:
 Create or reuse queue job for approved draft.
 
 Required role: admin, owner.
+
+Queue jobs must pin `draft_version_id` and use the workspace-scoped idempotency key to prevent duplicate publishing attempts for the same approved version.
 
 ### `POST /jobs/{job_id}/retry`
 

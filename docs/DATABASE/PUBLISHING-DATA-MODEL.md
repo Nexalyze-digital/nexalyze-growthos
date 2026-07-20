@@ -66,6 +66,7 @@ Unique constraint:
 
 - `id` string UUID primary key.
 - `draft_id` foreign key to `drafts.id`, unique when active.
+- `draft_version_id` foreign key to `draft_versions.id`.
 - `workspace_id` foreign key to `workspaces.id`, indexed.
 - `platform` string, indexed.
 - `scheduled_at_utc` timestamp, indexed.
@@ -86,6 +87,7 @@ Indexes:
 - `id` string UUID primary key.
 - `workspace_id` foreign key to `workspaces.id`, indexed.
 - `draft_id` foreign key to `drafts.id`, indexed.
+- `draft_version_id` foreign key to `draft_versions.id`.
 - `schedule_id` nullable foreign key to `schedules.id`.
 - `platform` string.
 - `status` string: pending, processing, succeeded, failed, cancelled.
@@ -149,9 +151,10 @@ No tokens are stored in v0.6.0.
 ## Soft Delete Strategy
 
 - Use `archived_at` for user-visible archive.
-- Use `deleted_at` for soft delete where appropriate.
+- Use `deleted_at` only for admin/internal cleanup where appropriate.
 - Default list APIs exclude `deleted_at`.
-- Archive is reversible; soft delete should not be exposed as permanent delete in v0.6.0.
+- Archive is reversible and is the primary user-facing removal flow in v0.6.0.
+- Soft delete is not a permanent delete and should not remove audit, approval, schedule, or publishing history.
 
 ## Migration Strategy
 

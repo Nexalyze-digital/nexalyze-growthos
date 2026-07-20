@@ -13,6 +13,7 @@
 - Scheduling validation, timezone conversion, past-time rejection.
 - Conflict detection.
 - Queue idempotency and retry count.
+- Queue and schedule pin approved draft version.
 - Transient mock failure and retry success.
 - Permanent mock failure blocks retry.
 - Publishing attempt history.
