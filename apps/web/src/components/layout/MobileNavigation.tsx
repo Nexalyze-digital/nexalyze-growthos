@@ -1,10 +1,11 @@
-import { Brain, Home, PenLine, Search } from "lucide-react";
+import { Brain, Home, PenLine, Search, Send } from "lucide-react";
 
 const items = [
   { href: "#top", icon: Home, label: "Home" },
   { href: "#brand-brain-title", icon: Brain, label: "Brand" },
   { href: "#research-hub-title", icon: Search, label: "Research" },
   { href: "#content-studio-title", icon: PenLine, label: "Studio" },
+  { href: "#publishing-title", icon: Send, label: "Publish" },
 ];
 
 export function MobileNavigation() {
@@ -13,7 +14,7 @@ export function MobileNavigation() {
       aria-label="Mobile navigation"
       className="sticky bottom-0 z-30 border-t border-white/10 bg-[#050812]/95 px-4 py-2 backdrop-blur lg:hidden"
     >
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-5 gap-2">
         {items.map(({ href, icon: Icon, label }) => (
           <a
             key={label}

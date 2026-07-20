@@ -54,11 +54,11 @@ See `docs/QA/POSTGRESQL-VALIDATION.md`, `docs/DEPLOYMENT/POSTGRESQL-BACKUP-RESTO
 
 ## Publishing Engine
 
-The v0.6.0 backend foundation adds workspace-scoped publishing APIs for drafts, version history, review, scheduling, and queue management. This package is backend-only: no Publishing Engine frontend screens are exposed yet.
+The v0.6.0 backend foundation adds workspace-scoped publishing APIs for drafts, version history, review, scheduling, and queue management.
 
-The foundation includes SQLAlchemy models, Alembic migrations, repositories, services, audit events, role authorization, optimistic draft revisions, schedule version pinning, and idempotent queue jobs.
+The frontend package adds responsive Publishing workspace screens for the Content Library, Draft Editor, Review Queue, Publishing Calendar, Publishing Queue, Settings, and Social Connection Status. Real external publishing providers remain out of scope.
 
-See `docs/API/PUBLISHING-BACKEND-FOUNDATION.md` and `docs/ARCHITECTURE/PUBLISHING-ENGINE.md`.
+See `docs/API/PUBLISHING-BACKEND-FOUNDATION.md`, `docs/ARCHITECTURE/PUBLISHING-ENGINE.md`, and `docs/QA/PUBLISHING-FRONTEND.md`.
 
 ## Apps
 

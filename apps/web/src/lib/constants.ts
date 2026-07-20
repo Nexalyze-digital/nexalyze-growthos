@@ -85,3 +85,16 @@ export const DEFAULT_RESEARCH_VALUES: ResearchRunFormValues = {
   brand_id: null,
   source_urls: [],
 };
+
+export const PUBLISHING_STATUS_OPTIONS = [
+  "generated",
+  "edited",
+  "ready_for_review",
+  "approved",
+  "rejected",
+  "scheduled",
+  "publishing",
+  "published",
+  "failed",
+  "archived",
+] as const;

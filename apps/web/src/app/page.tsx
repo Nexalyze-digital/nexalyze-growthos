@@ -8,6 +8,7 @@ import { DashboardHero } from "@/components/dashboard/DashboardHero";
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { AppShell } from "@/components/layout/AppShell";
+import { PublishingEngine } from "@/components/publishing/PublishingEngine";
 import { ResearchHub } from "@/components/research-hub/ResearchHub";
 import {
   clearStoredSession,
@@ -70,6 +71,7 @@ function AuthenticatedHome({
         <BrandBrain canEdit={canEdit} />
         <ResearchHub canEdit={canEdit} />
         <ContentStudio canEdit={canEdit} />
+        <PublishingEngine role={role} session={session} />
       </div>
     </AppShell>
   );

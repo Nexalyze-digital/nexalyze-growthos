@@ -1,8 +1,8 @@
 # Publishing Engine Architecture
 
-## Package 1 Scope
+## Package Scope
 
-Package 1 implements the Publishing Engine backend foundation only. It does not add frontend screens, navigation, real OAuth, or live social publishing.
+Package 1 implements the Publishing Engine backend foundation. Package 2 adds frontend workflows on top of those APIs. Neither package adds real OAuth, live social publishing, external provider adapters, or queue workers.
 
 ## Backend Layers
 
@@ -20,6 +20,13 @@ Package 1 implements the Publishing Engine backend foundation only. It does not 
   - `app/services/publishing_queue_service.py`
 - Persistence: SQLAlchemy models in `app/db/models.py` and Alembic revision `20260720_0002`.
 
+## Frontend Layers
+
+- Workspace: `apps/web/src/components/publishing/PublishingEngine.tsx`
+- Types: `apps/web/src/types/publishing.ts`
+- API client: Publishing helpers in `apps/web/src/lib/api.ts`
+- Navigation: existing sidebar and mobile navigation link to `#publishing-title`
+
 ## Data Flow
 
 1. Authenticated callers use `/api/v1/publishing/*` with an active workspace.
@@ -34,6 +41,7 @@ Package 1 implements the Publishing Engine backend foundation only. It does not 
 - Brand Brain can be associated through `brand_id` when the brand belongs to the same workspace.
 - Research Hub can be associated through `source_research_run_id` when the research run belongs to the same workspace.
 - Content Studio can hand generated output to `POST /drafts`; frontend handoff belongs to a later package.
+- Content Studio can hand generated output to `POST /drafts` through the `Save draft` action.
 
 ## Safety Controls
 

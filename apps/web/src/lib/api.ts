@@ -2,6 +2,17 @@ import type { ContentFormValues, GeneratedContent } from "@/types/content";
 import type { BrandBrain, BrandBrainFormValues } from "@/types/brand";
 import type { ResearchRun, ResearchRunFormValues } from "@/types/research";
 import type { AuthSession, LoginValues, RegisterValues } from "@/types/auth";
+import type {
+  Approval,
+  DraftFormValues,
+  DraftListResponse,
+  DraftUpdateValues,
+  DraftVersion,
+  PublishingDraft,
+  PublishingJob,
+  ReviewHistory,
+  Schedule,
+} from "@/types/publishing";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ||
@@ -337,4 +348,245 @@ export async function deleteResearchRun(runId: string): Promise<void> {
     const apiMessage = await parseApiError(response);
     throw new Error(apiMessage || "Unable to delete research.");
   }
+}
+
+export async function getPublishingDrafts(params: {
+  search?: string;
+  platform?: string;
+  status?: string;
+  archived?: boolean;
+  page?: number;
+  page_size?: number;
+} = {}): Promise<DraftListResponse> {
+  const search = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== "" && value !== null) {
+      search.set(key, String(value));
+    }
+  });
+  const response = await apiFetch(`/api/v1/publishing/drafts?${search.toString()}`, {
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to load publishing drafts.");
+  }
+  return response.json() as Promise<DraftListResponse>;
+}
+
+export async function createPublishingDraft(values: DraftFormValues): Promise<PublishingDraft> {
+  const response = await apiFetch("/api/v1/publishing/drafts", {
+    body: JSON.stringify(values),
+    headers: { "Content-Type": "application/json" },
+    method: "POST",
+  });
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to create draft.");
+  }
+  return response.json() as Promise<PublishingDraft>;
+}
+
+export async function updatePublishingDraft(
+  draftId: string,
+  values: DraftUpdateValues,
+): Promise<PublishingDraft> {
+  const response = await apiFetch(`/api/v1/publishing/drafts/${draftId}`, {
+    body: JSON.stringify(values),
+    headers: { "Content-Type": "application/json" },
+    method: "PUT",
+  });
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to save draft.");
+  }
+  return response.json() as Promise<PublishingDraft>;
+}
+
+export async function duplicatePublishingDraft(draftId: string): Promise<PublishingDraft> {
+  const response = await apiFetch(`/api/v1/publishing/drafts/${draftId}/duplicate`, {
+    body: JSON.stringify({}),
+    headers: { "Content-Type": "application/json" },
+    method: "POST",
+  });
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to duplicate draft.");
+  }
+  return response.json() as Promise<PublishingDraft>;
+}
+
+export async function archivePublishingDraft(draftId: string): Promise<PublishingDraft> {
+  const response = await apiFetch(`/api/v1/publishing/drafts/${draftId}/archive`, {
+    method: "POST",
+  });
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to archive draft.");
+  }
+  return response.json() as Promise<PublishingDraft>;
+}
+
+export async function restorePublishingDraft(draftId: string): Promise<PublishingDraft> {
+  const response = await apiFetch(`/api/v1/publishing/drafts/${draftId}/restore`, {
+    method: "POST",
+  });
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to restore draft.");
+  }
+  return response.json() as Promise<PublishingDraft>;
+}
+
+export async function getPublishingVersions(draftId: string): Promise<DraftVersion[]> {
+  const response = await apiFetch(`/api/v1/publishing/drafts/${draftId}/versions`, {
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to load version history.");
+  }
+  const payload = (await response.json()) as { versions: DraftVersion[] };
+  return payload.versions;
+}
+
+export async function submitPublishingDraft(draftId: string): Promise<Approval> {
+  const response = await apiFetch(`/api/v1/publishing/drafts/${draftId}/submit`, {
+    method: "POST",
+  });
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to submit draft.");
+  }
+  return response.json() as Promise<Approval>;
+}
+
+export async function approvePublishingDraft(draftId: string, body: string): Promise<Approval> {
+  return reviewPublishingDraft(draftId, "approve", body || "Approved.");
+}
+
+export async function rejectPublishingDraft(draftId: string, body: string): Promise<Approval> {
+  return reviewPublishingDraft(draftId, "reject", body);
+}
+
+export async function requestPublishingRevision(draftId: string, body: string): Promise<Approval> {
+  return reviewPublishingDraft(draftId, "request-revision", body);
+}
+
+async function reviewPublishingDraft(
+  draftId: string,
+  action: "approve" | "reject" | "request-revision",
+  body: string,
+): Promise<Approval> {
+  const response = await apiFetch(`/api/v1/publishing/drafts/${draftId}/${action}`, {
+    body: JSON.stringify({ body }),
+    headers: { "Content-Type": "application/json" },
+    method: "POST",
+  });
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to update review.");
+  }
+  return response.json() as Promise<Approval>;
+}
+
+export async function getPublishingReviewHistory(draftId: string): Promise<ReviewHistory> {
+  const response = await apiFetch(`/api/v1/publishing/drafts/${draftId}/review-history`, {
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to load review history.");
+  }
+  return response.json() as Promise<ReviewHistory>;
+}
+
+export async function schedulePublishingDraft(
+  draftId: string,
+  scheduled_at: string,
+  timezone = "UTC",
+): Promise<Schedule> {
+  const response = await apiFetch(`/api/v1/publishing/drafts/${draftId}/schedule`, {
+    body: JSON.stringify({ scheduled_at, timezone }),
+    headers: { "Content-Type": "application/json" },
+    method: "POST",
+  });
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to schedule draft.");
+  }
+  return response.json() as Promise<Schedule>;
+}
+
+export async function reschedulePublishingDraft(
+  scheduleId: string,
+  scheduled_at: string,
+  timezone = "UTC",
+): Promise<Schedule> {
+  const response = await apiFetch(`/api/v1/publishing/schedules/${scheduleId}`, {
+    body: JSON.stringify({ scheduled_at, timezone }),
+    headers: { "Content-Type": "application/json" },
+    method: "PUT",
+  });
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to reschedule draft.");
+  }
+  return response.json() as Promise<Schedule>;
+}
+
+export async function unschedulePublishingDraft(scheduleId: string): Promise<Schedule> {
+  const response = await apiFetch(`/api/v1/publishing/schedules/${scheduleId}/unschedule`, {
+    method: "POST",
+  });
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to unschedule draft.");
+  }
+  return response.json() as Promise<Schedule>;
+}
+
+export async function enqueuePublishingDraft(draftId: string): Promise<PublishingJob> {
+  const response = await apiFetch(`/api/v1/publishing/drafts/${draftId}/enqueue`, {
+    method: "POST",
+  });
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to enqueue draft.");
+  }
+  return response.json() as Promise<PublishingJob>;
+}
+
+export async function getPublishingJobs(): Promise<PublishingJob[]> {
+  const response = await apiFetch("/api/v1/publishing/jobs", {
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to load publishing queue.");
+  }
+  const payload = (await response.json()) as { jobs: PublishingJob[] };
+  return payload.jobs;
+}
+
+export async function retryPublishingJob(jobId: string): Promise<PublishingJob> {
+  const response = await apiFetch(`/api/v1/publishing/jobs/${jobId}/retry`, {
+    method: "POST",
+  });
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to retry publishing job.");
+  }
+  return response.json() as Promise<PublishingJob>;
+}
+
+export async function cancelPublishingJob(jobId: string): Promise<PublishingJob> {
+  const response = await apiFetch(`/api/v1/publishing/jobs/${jobId}/cancel`, {
+    method: "POST",
+  });
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to cancel publishing job.");
+  }
+  return response.json() as Promise<PublishingJob>;
 }

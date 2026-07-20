@@ -9,7 +9,10 @@ All notable changes to this project will be documented here.
 - Added workspace-scoped Publishing API endpoints for draft CRUD, review, scheduling, and queue operations.
 - Added service and repository layers with role authorization, audit events, optimistic revision checks, version-pinned scheduling, and idempotent queueing.
 - Added backend tests for publishing CRUD, authorization, workspace isolation, lifecycle transitions, scheduling, queue validation, retry, and archive/restore.
-- No Publishing Engine frontend screens are included in this package.
+- Added responsive Publishing frontend workflows for library, editor, detail, review, calendar, queue, settings, and connection status.
+- Added Content Studio save-to-draft handoff.
+- Added Playwright smoke coverage for Publishing frontend workflows.
+- Real external publishing providers, OAuth, queue workers, and provider adapters remain out of scope.
 
 ## 0.5.1
 

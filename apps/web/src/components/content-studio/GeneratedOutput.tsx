@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Clipboard, RefreshCw } from "lucide-react";
+import { Clipboard, FileText, RefreshCw } from "lucide-react";
+import { createPublishingDraft } from "@/lib/api";
 import type { GeneratedContent } from "@/types/content";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -24,6 +25,9 @@ export function GeneratedOutput({
   status,
 }: GeneratedOutputProps) {
   const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "failed">(
+    "idle",
+  );
+  const [draftStatus, setDraftStatus] = useState<"idle" | "saved" | "failed">(
     "idle",
   );
 
@@ -55,6 +59,25 @@ export function GeneratedOutput({
       setCopyStatus("copied");
     } catch {
       setCopyStatus("failed");
+    }
+  }
+
+  async function saveAsDraft() {
+    if (!generatedContent) {
+      return;
+    }
+    try {
+      await createPublishingDraft({
+        title: generatedContent.title,
+        body: generatedContent.content,
+        platform: generatedContent.platform,
+        hashtags: generatedContent.hashtags,
+        brand_id: null,
+        source_research_run_id: null,
+      });
+      setDraftStatus("saved");
+    } catch {
+      setDraftStatus("failed");
     }
   }
 
@@ -154,7 +177,7 @@ export function GeneratedOutput({
             </div>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-3">
             <Button
               disabled={isLoading}
               icon={Clipboard}
@@ -177,6 +200,21 @@ export function GeneratedOutput({
                 variant="secondary"
               >
                 Regenerate
+              </Button>
+            ) : null}
+            {canRegenerate ? (
+              <Button
+                disabled={isLoading}
+                icon={FileText}
+                onClick={saveAsDraft}
+                type="button"
+                variant="secondary"
+              >
+                {draftStatus === "saved"
+                  ? "Draft saved"
+                  : draftStatus === "failed"
+                    ? "Save failed"
+                    : "Save draft"}
               </Button>
             ) : null}
           </div>
