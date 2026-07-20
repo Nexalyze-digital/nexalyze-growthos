@@ -182,11 +182,11 @@ class DraftService:
         if brand_id:
             brand = self.db.get(BrandRecord, brand_id)
             if not brand or brand.workspace_id != self.workspace_id:
-                raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Brand Brain profile was not found in this workspace.")
+                raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail="Brand Brain profile was not found in this workspace.")
         if research_id:
             research = self.db.get(ResearchRecord, research_id)
             if not research or research.workspace_id != self.workspace_id:
-                raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Research run was not found in this workspace.")
+                raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail="Research run was not found in this workspace.")
 
     def _require_editor(self) -> None:
         if self.role not in {WorkspaceRole.owner, WorkspaceRole.admin, WorkspaceRole.editor}:

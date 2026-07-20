@@ -86,11 +86,11 @@ class ScheduleService:
         try:
             zone = ZoneInfo(timezone_name)
         except ZoneInfoNotFoundError as error:
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Invalid timezone.") from error
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail="Invalid timezone.") from error
         local = value.replace(tzinfo=zone) if value.tzinfo is None else value.astimezone(zone)
         scheduled_at_utc = local.astimezone(timezone.utc)
         if scheduled_at_utc <= utc_now():
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Schedule time must be in the future.")
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail="Schedule time must be in the future.")
         return scheduled_at_utc
 
     def _approved_draft(self, draft_id: str):
