@@ -13,6 +13,10 @@ build/
 *.encoding-backup
 apps/api/data/*.json
 apps/api/data/*.json.bak
-apps/api/data/*.db
-apps/api/data/*.sqlite
-apps/api/data/*.sqlite3
+apps/api/data/**/*.json
+apps/api/data/**/*.json.bak
+apps/api/tmp/
+apps/api/data/pytest-*/
+apps/api/*.db
+apps/api/*.sqlite
+apps/api/*.sqlite3

@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented here.
 
-## 0.6.0 Unreleased
+## 0.6.0 — 2026-07-20
 
 - Added Publishing Engine backend foundation with drafts, draft versions, approvals, approval comments, schedules, publishing jobs, publishing attempts, and workspace publishing settings.
 - Added Alembic migration for Publishing Engine persistence.
@@ -16,6 +16,7 @@ All notable changes to this project will be documented here.
 - Added durable queue states for processing, published, retry pending, dead letter, failed, and cancelled jobs.
 - Added workspace publishing processing settings, exponential retry scheduling, dead-letter handling, and publishing audit history.
 - Added backend tests for processing success, transient retries, permanent failures, settings authorization, audit history, and workspace isolation.
+- Fixed deprecated `HTTP_422_UNPROCESSABLE_ENTITY` → `HTTP_422_UNPROCESSABLE_CONTENT` for Starlette 1.3.1 compatibility.
 - Real external publishing providers, OAuth, browser automation, and social API credentials remain out of scope.
 
 ## 0.5.1
