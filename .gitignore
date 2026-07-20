@@ -17,6 +17,6 @@ apps/api/data/**/*.json
 apps/api/data/**/*.json.bak
 apps/api/tmp/
 apps/api/data/pytest-*/
-apps/api/*.db
-apps/api/*.sqlite
-apps/api/*.sqlite3
+apps/api/**/*.db
+apps/api/**/*.sqlite
+apps/api/**/*.sqlite3
