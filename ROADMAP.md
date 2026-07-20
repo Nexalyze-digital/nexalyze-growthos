@@ -7,14 +7,14 @@
 - Brand Brain: Complete
 - Research Hub: Complete
 - Platform Identity, Workspaces, and Database: Complete
-- PostgreSQL Live Validation: In Progress
-- Publishing Engine: Planned
+- PostgreSQL Live Validation: Complete
+- Publishing Engine: Processing Engine Complete; Release Hardening Next
 - Website Intelligence: Planned
 - Lead Intelligence Integration: Planned
 - Workflow Automation: Planned
 - Authentication and workspace ownership: Complete
 - Database migration: Complete
-- Session hardening: In Progress
+- Session hardening: Complete
 
 ## Sprint 1
 - FastAPI backend
@@ -39,7 +39,9 @@
 - Role-aware UI hardening
 
 ## Sprint 5
-- Publishing Engine
+- Publishing Engine backend foundation
+- Publishing Engine frontend workflows
+- Publishing Engine mock processing and release hardening
 - Website Intelligence
 - Lead Intelligence Integration
 - Scheduler

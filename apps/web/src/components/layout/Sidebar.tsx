@@ -27,6 +27,7 @@ export function Sidebar() {
     "AI Content Studio": "#content-studio-title",
     "Brand Brain": "#brand-brain-title",
     "Research Hub": "#research-hub-title",
+    Publishing: "#publishing-title",
   };
 
   return (

@@ -15,3 +15,7 @@ export function canEditWorkspace(role: WorkspaceRole) {
 export function canAdminWorkspace(role: WorkspaceRole) {
   return role === "owner" || role === "admin";
 }
+
+export function isWorkspaceOwner(role: WorkspaceRole) {
+  return role === "owner";
+}

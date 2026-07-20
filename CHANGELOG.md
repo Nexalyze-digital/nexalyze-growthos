@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented here.
 
+## 0.6.0 Unreleased
+
+- Added Publishing Engine backend foundation with drafts, draft versions, approvals, approval comments, schedules, publishing jobs, publishing attempts, and workspace publishing settings.
+- Added Alembic migration for Publishing Engine persistence.
+- Added workspace-scoped Publishing API endpoints for draft CRUD, review, scheduling, and queue operations.
+- Added service and repository layers with role authorization, audit events, optimistic revision checks, version-pinned scheduling, and idempotent queueing.
+- Added backend tests for publishing CRUD, authorization, workspace isolation, lifecycle transitions, scheduling, queue validation, retry, and archive/restore.
+- Added responsive Publishing frontend workflows for library, editor, detail, review, calendar, queue, settings, and connection status.
+- Added Content Studio save-to-draft handoff.
+- Added Playwright smoke coverage for Publishing frontend workflows.
+- Added deterministic mock publishing processing for LinkedIn, X, Instagram, and Facebook.
+- Added durable queue states for processing, published, retry pending, dead letter, failed, and cancelled jobs.
+- Added workspace publishing processing settings, exponential retry scheduling, dead-letter handling, and publishing audit history.
+- Added backend tests for processing success, transient retries, permanent failures, settings authorization, audit history, and workspace isolation.
+- Real external publishing providers, OAuth, browser automation, and social API credentials remain out of scope.
+
 ## 0.5.1
 
 - Validated Alembic upgrade, downgrade, and re-upgrade against local PostgreSQL 17.
