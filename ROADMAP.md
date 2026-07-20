@@ -8,7 +8,7 @@
 - Research Hub: Complete
 - Platform Identity, Workspaces, and Database: Complete
 - PostgreSQL Live Validation: In Progress
-- Publishing Engine: Planned
+- Publishing Engine: Backend Foundation In Progress
 - Website Intelligence: Planned
 - Lead Intelligence Integration: Planned
 - Workflow Automation: Planned
@@ -39,7 +39,8 @@
 - Role-aware UI hardening
 
 ## Sprint 5
-- Publishing Engine
+- Publishing Engine backend foundation
+- Publishing Engine frontend workflows
 - Website Intelligence
 - Lead Intelligence Integration
 - Scheduler

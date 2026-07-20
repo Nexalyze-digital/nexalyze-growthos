@@ -52,6 +52,14 @@ For production, set `APP_ENV=production`, set a strong `JWT_SECRET_KEY`, configu
 See `docs/AI/PLATFORM-IDENTITY-DATABASE.md` and `docs/QA/PLATFORM-IDENTITY-DATABASE.md`.
 See `docs/QA/POSTGRESQL-VALIDATION.md`, `docs/DEPLOYMENT/POSTGRESQL-BACKUP-RESTORE.md`, and `docs/SECURITY/TOKEN-STORAGE-REVIEW.md` for v0.5.1 hardening guidance.
 
+## Publishing Engine
+
+The v0.6.0 backend foundation adds workspace-scoped publishing APIs for drafts, version history, review, scheduling, and queue management. This package is backend-only: no Publishing Engine frontend screens are exposed yet.
+
+The foundation includes SQLAlchemy models, Alembic migrations, repositories, services, audit events, role authorization, optimistic draft revisions, schedule version pinning, and idempotent queue jobs.
+
+See `docs/API/PUBLISHING-BACKEND-FOUNDATION.md` and `docs/ARCHITECTURE/PUBLISHING-ENGINE.md`.
+
 ## Apps
 
 - apps/api - FastAPI backend

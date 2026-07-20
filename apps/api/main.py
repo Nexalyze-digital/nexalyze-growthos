@@ -4,7 +4,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import auth, brands, content, health, research
+from app.api.routes import auth, brands, content, health, publishing, research
 from app.core.config import settings
 from app.db import init_db
 
@@ -24,6 +24,7 @@ app.include_router(auth.router, prefix="/api/v1")
 app.include_router(brands.router, prefix="/api/v1")
 app.include_router(content.router, prefix="/api/v1")
 app.include_router(research.router, prefix="/api/v1")
+app.include_router(publishing.router, prefix="/api/v1")
 
 _auth_attempts: dict[str, list[float]] = {}
 

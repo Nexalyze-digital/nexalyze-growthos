@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented here.
 
+## 0.6.0 Unreleased
+
+- Added Publishing Engine backend foundation with drafts, draft versions, approvals, approval comments, schedules, publishing jobs, publishing attempts, and workspace publishing settings.
+- Added Alembic migration for Publishing Engine persistence.
+- Added workspace-scoped Publishing API endpoints for draft CRUD, review, scheduling, and queue operations.
+- Added service and repository layers with role authorization, audit events, optimistic revision checks, version-pinned scheduling, and idempotent queueing.
+- Added backend tests for publishing CRUD, authorization, workspace isolation, lifecycle transitions, scheduling, queue validation, retry, and archive/restore.
+- No Publishing Engine frontend screens are included in this package.
+
 ## 0.5.1
 
 - Validated Alembic upgrade, downgrade, and re-upgrade against local PostgreSQL 17.
