@@ -30,6 +30,8 @@ import {
   getPublishingJobs,
   getPublishingReviewHistory,
   getPublishingVersions,
+  processPublishingJob,
+  processPublishingQueue,
   rejectPublishingDraft,
   requestPublishingRevision,
   restorePublishingDraft,
@@ -311,15 +313,27 @@ export function PublishingEngine({ role, session }: PublishingEngineProps) {
     }
   }
 
-  async function runJobAction(jobId: string, action: "retry" | "cancel") {
+  async function processNextJob() {
+    try {
+      const processed = await processPublishingQueue();
+      setJobs(await getPublishingJobs());
+      setMessage(processed.length ? "Publishing queue processed." : "No processable jobs are ready.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Unable to process publishing queue.");
+    }
+  }
+
+  async function runJobAction(jobId: string, action: "retry" | "cancel" | "process") {
     try {
       if (action === "retry") {
         await retryPublishingJob(jobId);
-      } else {
+      } else if (action === "cancel") {
         await cancelPublishingJob(jobId);
+      } else {
+        await processPublishingJob(jobId);
       }
       setJobs(await getPublishingJobs());
-      setMessage(action === "retry" ? "Retry queued." : "Job cancelled.");
+      setMessage(action === "retry" ? "Retry queued." : action === "cancel" ? "Job cancelled." : "Publishing job processed.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Queue action failed.");
     }
@@ -465,7 +479,7 @@ export function PublishingEngine({ role, session }: PublishingEngineProps) {
       ) : null}
 
       {status !== "error" && activeTab === "queue" ? (
-        <QueueView canAdmin={canAdmin} jobs={jobs} onJobAction={runJobAction} />
+        <QueueView canAdmin={canAdmin} jobs={jobs} onJobAction={runJobAction} onProcessNext={processNextJob} />
       ) : null}
 
       {status !== "error" && activeTab === "settings" ? (
@@ -761,17 +775,36 @@ function CalendarView(props: {
   );
 }
 
-function QueueView({ canAdmin, jobs, onJobAction }: { canAdmin: boolean; jobs: PublishingJob[]; onJobAction: (jobId: string, action: "retry" | "cancel") => void }) {
+function QueueView({
+  canAdmin,
+  jobs,
+  onJobAction,
+  onProcessNext,
+}: {
+  canAdmin: boolean;
+  jobs: PublishingJob[];
+  onJobAction: (jobId: string, action: "retry" | "cancel" | "process") => void;
+  onProcessNext: () => void;
+}) {
   return (
     <Card>
-      <h3 className="text-lg font-semibold text-white">Publishing queue</h3>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h3 className="text-lg font-semibold text-white">Publishing queue</h3>
+        {canAdmin ? (
+          <Button className="sm:w-auto" icon={Send} onClick={onProcessNext} type="button" variant="secondary">
+            Process next
+          </Button>
+        ) : null}
+      </div>
       <div className="mt-4 space-y-3">
         {jobs.length === 0 ? <p className="text-sm text-slate-400">No publishing jobs are queued yet.</p> : null}
         {jobs.map((job) => (
           <details key={job.id} className="rounded-lg border border-white/10 p-4 text-sm text-slate-300">
             <summary className="cursor-pointer font-medium text-white">{job.platform} · {job.status} · retries {job.retry_count}</summary>
             <p className="mt-2 text-xs text-slate-500">Idempotency: {job.idempotency_key}</p>
+            {job.provider_response_summary ? <p className="mt-2 text-xs text-slate-400">{job.provider_response_summary}</p> : null}
             <div className="mt-3 flex flex-wrap gap-2">
+              {canAdmin ? <IconButton label="Process" icon={Send} onClick={() => onJobAction(job.id, "process")} /> : null}
               {canAdmin ? <IconButton label="Retry" icon={RefreshCw} onClick={() => onJobAction(job.id, "retry")} /> : null}
               {canAdmin ? <IconButton label="Cancel" icon={XCircle} onClick={() => onJobAction(job.id, "cancel")} /> : null}
             </div>

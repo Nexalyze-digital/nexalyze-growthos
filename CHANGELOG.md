@@ -12,7 +12,11 @@ All notable changes to this project will be documented here.
 - Added responsive Publishing frontend workflows for library, editor, detail, review, calendar, queue, settings, and connection status.
 - Added Content Studio save-to-draft handoff.
 - Added Playwright smoke coverage for Publishing frontend workflows.
-- Real external publishing providers, OAuth, queue workers, and provider adapters remain out of scope.
+- Added deterministic mock publishing processing for LinkedIn, X, Instagram, and Facebook.
+- Added durable queue states for processing, published, retry pending, dead letter, failed, and cancelled jobs.
+- Added workspace publishing processing settings, exponential retry scheduling, dead-letter handling, and publishing audit history.
+- Added backend tests for processing success, transient retries, permanent failures, settings authorization, audit history, and workspace isolation.
+- Real external publishing providers, OAuth, browser automation, and social API credentials remain out of scope.
 
 ## 0.5.1
 

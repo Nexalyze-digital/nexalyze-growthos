@@ -11,11 +11,15 @@ from app.schemas.publishing import (
     DraftVersionListResponse,
     PublishingJobListResponse,
     PublishingJobResponse,
+    PublishingAuditHistoryResponse,
+    PublishingProcessRequest,
     ReviewCommentCreate,
     ReviewHistoryResponse,
     ScheduleCreate,
     ScheduleResponse,
     ScheduleUpdate,
+    WorkspacePublishingSettingsResponse,
+    WorkspacePublishingSettingsUpdate,
 )
 from app.services.approval_service import ApprovalService
 from app.services.draft_service import DraftService
@@ -144,9 +148,22 @@ def list_jobs(context: RequestContext = Depends(get_request_context)) -> Publish
     return _queue_service(context).list()
 
 
+@router.post("/jobs/process-next", response_model=PublishingJobListResponse)
+def process_next_jobs(
+    payload: PublishingProcessRequest | None = None,
+    context: RequestContext = Depends(get_request_context),
+) -> PublishingJobListResponse:
+    return _queue_service(context).process_next((payload or PublishingProcessRequest()).limit)
+
+
 @router.get("/jobs/{job_id}", response_model=PublishingJobResponse)
 def get_job(job_id: str, context: RequestContext = Depends(get_request_context)) -> PublishingJobResponse:
     return _queue_service(context).get(job_id)
+
+
+@router.post("/jobs/{job_id}/process", response_model=PublishingJobResponse)
+def process_job(job_id: str, context: RequestContext = Depends(get_request_context)) -> PublishingJobResponse:
+    return _queue_service(context).process(job_id)
 
 
 @router.post("/jobs/{job_id}/retry", response_model=PublishingJobResponse)
@@ -157,6 +174,24 @@ def retry_job(job_id: str, context: RequestContext = Depends(get_request_context
 @router.post("/jobs/{job_id}/cancel", response_model=PublishingJobResponse)
 def cancel_job(job_id: str, context: RequestContext = Depends(get_request_context)) -> PublishingJobResponse:
     return _queue_service(context).cancel(job_id)
+
+
+@router.get("/jobs/{job_id}/audit-history", response_model=PublishingAuditHistoryResponse)
+def job_audit_history(job_id: str, context: RequestContext = Depends(get_request_context)) -> PublishingAuditHistoryResponse:
+    return _queue_service(context).audit_history(job_id)
+
+
+@router.get("/settings", response_model=WorkspacePublishingSettingsResponse)
+def get_publishing_settings(context: RequestContext = Depends(get_request_context)) -> WorkspacePublishingSettingsResponse:
+    return _queue_service(context).get_settings()
+
+
+@router.put("/settings", response_model=WorkspacePublishingSettingsResponse)
+def update_publishing_settings(
+    payload: WorkspacePublishingSettingsUpdate,
+    context: RequestContext = Depends(get_request_context),
+) -> WorkspacePublishingSettingsResponse:
+    return _queue_service(context).update_settings(payload)
 
 
 def _draft_service(context: RequestContext) -> DraftService:

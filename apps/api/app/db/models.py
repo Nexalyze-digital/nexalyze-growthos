@@ -229,6 +229,26 @@ class PublishingAttempt(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
 
 
+class PublishingAuditEvent(Base):
+    __tablename__ = "publishing_audit_events"
+    __table_args__ = (
+        Index("ix_publishing_audit_workspace_job_created", "workspace_id", "job_id", "created_at"),
+        Index("ix_publishing_audit_workspace_action", "workspace_id", "action"),
+    )
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid4()))
+    workspace_id: Mapped[str] = mapped_column(ForeignKey("workspaces.id"), index=True)
+    user_id: Mapped[str | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    job_id: Mapped[str | None] = mapped_column(ForeignKey("publishing_jobs.id"), nullable=True, index=True)
+    draft_id: Mapped[str] = mapped_column(ForeignKey("drafts.id"), index=True)
+    draft_version_id: Mapped[str] = mapped_column(ForeignKey("draft_versions.id"))
+    provider: Mapped[str] = mapped_column(String(40), default="mock")
+    action: Mapped[str] = mapped_column(String(80))
+    attempt_number: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    message: Mapped[str] = mapped_column(Text, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
+
+
 class WorkspacePublishingSettings(Base):
     __tablename__ = "workspace_publishing_settings"
 
@@ -238,5 +258,9 @@ class WorkspacePublishingSettings(Base):
     approval_required: Mapped[bool] = mapped_column(Boolean, default=True)
     prevent_self_approval: Mapped[bool] = mapped_column(Boolean, default=True)
     default_platforms: Mapped[str] = mapped_column(Text, default="[]")
+    max_retry_count: Mapped[int] = mapped_column(Integer, default=3)
+    retry_backoff_base_seconds: Mapped[int] = mapped_column(Integer, default=60)
+    queue_concurrency: Mapped[int] = mapped_column(Integer, default=1)
+    mock_provider_behavior: Mapped[str] = mapped_column(String(40), default="deterministic")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)

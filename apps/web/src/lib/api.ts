@@ -569,6 +569,31 @@ export async function getPublishingJobs(): Promise<PublishingJob[]> {
   return payload.jobs;
 }
 
+export async function processPublishingQueue(): Promise<PublishingJob[]> {
+  const response = await apiFetch("/api/v1/publishing/jobs/process-next", {
+    body: JSON.stringify({ limit: 1 }),
+    headers: { "Content-Type": "application/json" },
+    method: "POST",
+  });
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to process publishing queue.");
+  }
+  const payload = (await response.json()) as { jobs: PublishingJob[] };
+  return payload.jobs;
+}
+
+export async function processPublishingJob(jobId: string): Promise<PublishingJob> {
+  const response = await apiFetch(`/api/v1/publishing/jobs/${jobId}/process`, {
+    method: "POST",
+  });
+  if (!response.ok) {
+    const apiMessage = await parseApiError(response);
+    throw new Error(apiMessage || "Unable to process publishing job.");
+  }
+  return response.json() as Promise<PublishingJob>;
+}
+
 export async function retryPublishingJob(jobId: string): Promise<PublishingJob> {
   const response = await apiFetch(`/api/v1/publishing/jobs/${jobId}/retry`, {
     method: "POST",

@@ -2,7 +2,7 @@
 
 ## Package Scope
 
-Package 1 implements the Publishing Engine backend foundation. Package 2 adds frontend workflows on top of those APIs. Neither package adds real OAuth, live social publishing, external provider adapters, or queue workers.
+Package 1 implements the Publishing Engine backend foundation. Package 2 adds frontend workflows on top of those APIs. Package 3 adds deterministic mock queue processing. These packages do not add real OAuth, live social publishing, external provider adapters, or browser automation.
 
 ## Backend Layers
 
@@ -18,7 +18,8 @@ Package 1 implements the Publishing Engine backend foundation. Package 2 adds fr
   - `app/services/approval_service.py`
   - `app/services/schedule_service.py`
   - `app/services/publishing_queue_service.py`
-- Persistence: SQLAlchemy models in `app/db/models.py` and Alembic revision `20260720_0002`.
+- Provider: `app/providers/publishing.py`
+- Persistence: SQLAlchemy models in `app/db/models.py` and Alembic revisions `20260720_0002` and `20260720_0003`.
 
 ## Frontend Layers
 
@@ -33,7 +34,7 @@ Package 1 implements the Publishing Engine backend foundation. Package 2 adds fr
 2. Request context validates user and workspace membership.
 3. Services enforce role permissions and lifecycle transitions.
 4. Repositories perform workspace-scoped persistence.
-5. Audit events are written for publishing mutations.
+5. Queue processing writes attempts, publishing-specific audit events, and general audit events.
 
 ## Integration Points
 
@@ -54,3 +55,6 @@ Package 1 implements the Publishing Engine backend foundation. Package 2 adds fr
 - Idempotent queue creation.
 - No social tokens stored in this package.
 - No external network publishing performed in this package.
+- Deterministic mock processing only.
+- Retry windows are enforced before processing retry-pending jobs.
+- Dead-letter state prevents endless retries after permanent failures or retry exhaustion.

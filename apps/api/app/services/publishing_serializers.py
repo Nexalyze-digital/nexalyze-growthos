@@ -1,4 +1,6 @@
-from app.db.models import Approval, ApprovalComment, Draft, DraftVersion, PublishingAttempt, PublishingJob, Schedule
+import json
+
+from app.db.models import Approval, ApprovalComment, Draft, DraftVersion, PublishingAttempt, PublishingAuditEvent, PublishingJob, Schedule, WorkspacePublishingSettings
 from app.repositories.publishing_utils import decode_hashtags
 from app.schemas.publishing import (
     ApprovalCommentResponse,
@@ -7,7 +9,9 @@ from app.schemas.publishing import (
     DraftVersionResponse,
     PublishingAttemptResponse,
     PublishingJobResponse,
+    PublishingAuditEventResponse,
     ScheduleResponse,
+    WorkspacePublishingSettingsResponse,
 )
 
 
@@ -118,4 +122,41 @@ def job_response(job: PublishingJob, attempts: list[PublishingAttempt]) -> Publi
         created_at=job.created_at,
         updated_at=job.updated_at,
         attempts=[attempt_response(attempt) for attempt in attempts],
+    )
+
+
+def publishing_audit_response(event: PublishingAuditEvent) -> PublishingAuditEventResponse:
+    return PublishingAuditEventResponse(
+        id=event.id,
+        workspace_id=event.workspace_id,
+        user_id=event.user_id,
+        job_id=event.job_id,
+        draft_id=event.draft_id,
+        draft_version_id=event.draft_version_id,
+        provider=event.provider,
+        action=event.action,
+        attempt_number=event.attempt_number,
+        message=event.message,
+        created_at=event.created_at,
+    )
+
+
+def publishing_settings_response(settings: WorkspacePublishingSettings) -> WorkspacePublishingSettingsResponse:
+    try:
+        platforms = json.loads(settings.default_platforms or "[]")
+    except json.JSONDecodeError:
+        platforms = []
+    return WorkspacePublishingSettingsResponse(
+        id=settings.id,
+        workspace_id=settings.workspace_id,
+        timezone=settings.timezone,
+        approval_required=settings.approval_required,
+        prevent_self_approval=settings.prevent_self_approval,
+        default_platforms=platforms,
+        max_retry_count=settings.max_retry_count,
+        retry_backoff_base_seconds=settings.retry_backoff_base_seconds,
+        queue_concurrency=settings.queue_concurrency,
+        mock_provider_behavior=settings.mock_provider_behavior,
+        created_at=settings.created_at,
+        updated_at=settings.updated_at,
     )

@@ -21,8 +21,11 @@ export type ApprovalStatus =
 export type PublishingJobStatus =
   | "pending"
   | "processing"
+  | "retry_pending"
+  | "published"
   | "succeeded"
   | "failed"
+  | "dead_letter"
   | "cancelled";
 
 export type DraftFormValues = {

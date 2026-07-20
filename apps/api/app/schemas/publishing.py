@@ -52,9 +52,19 @@ class ScheduleStatus(str, Enum):
 class PublishingJobStatus(str, Enum):
     pending = "pending"
     processing = "processing"
+    retry_pending = "retry_pending"
+    published = "published"
     succeeded = "succeeded"
     failed = "failed"
+    dead_letter = "dead_letter"
     cancelled = "cancelled"
+
+
+class MockProviderBehavior(str, Enum):
+    deterministic = "deterministic"
+    success = "success"
+    transient_failure = "transient_failure"
+    permanent_failure = "permanent_failure"
 
 
 class DraftBase(BaseModel):
@@ -217,3 +227,51 @@ class PublishingJobResponse(BaseModel):
 
 class PublishingJobListResponse(BaseModel):
     jobs: list[PublishingJobResponse]
+
+
+class PublishingProcessRequest(BaseModel):
+    limit: int | None = Field(default=None, ge=1, le=10)
+
+
+class PublishingAuditEventResponse(BaseModel):
+    id: str
+    workspace_id: str
+    user_id: str | None = None
+    job_id: str | None = None
+    draft_id: str
+    draft_version_id: str
+    provider: str
+    action: str
+    attempt_number: int | None = None
+    message: str
+    created_at: datetime
+
+
+class PublishingAuditHistoryResponse(BaseModel):
+    events: list[PublishingAuditEventResponse]
+
+
+class WorkspacePublishingSettingsUpdate(BaseModel):
+    timezone: str | None = Field(default=None, min_length=1, max_length=80)
+    approval_required: bool | None = None
+    prevent_self_approval: bool | None = None
+    default_platforms: list[PublishingPlatform] | None = Field(default=None, max_length=4)
+    max_retry_count: int | None = Field(default=None, ge=0, le=10)
+    retry_backoff_base_seconds: int | None = Field(default=None, ge=1, le=3600)
+    queue_concurrency: int | None = Field(default=None, ge=1, le=10)
+    mock_provider_behavior: MockProviderBehavior | None = None
+
+
+class WorkspacePublishingSettingsResponse(BaseModel):
+    id: str
+    workspace_id: str
+    timezone: str
+    approval_required: bool
+    prevent_self_approval: bool
+    default_platforms: list[PublishingPlatform]
+    max_retry_count: int
+    retry_backoff_base_seconds: int
+    queue_concurrency: int
+    mock_provider_behavior: MockProviderBehavior
+    created_at: datetime
+    updated_at: datetime

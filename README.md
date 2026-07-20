@@ -58,7 +58,9 @@ The v0.6.0 backend foundation adds workspace-scoped publishing APIs for drafts, 
 
 The frontend package adds responsive Publishing workspace screens for the Content Library, Draft Editor, Review Queue, Publishing Calendar, Publishing Queue, Settings, and Social Connection Status. Real external publishing providers remain out of scope.
 
-See `docs/API/PUBLISHING-BACKEND-FOUNDATION.md`, `docs/ARCHITECTURE/PUBLISHING-ENGINE.md`, and `docs/QA/PUBLISHING-FRONTEND.md`.
+The processing package adds deterministic mock publishing for LinkedIn, X, Instagram, and Facebook with durable processing states, retry backoff, dead-letter handling, idempotency, provider attempts, and publishing audit history.
+
+See `docs/API/PUBLISHING-BACKEND-FOUNDATION.md`, `docs/ARCHITECTURE/PUBLISHING-ENGINE.md`, `docs/ARCHITECTURE/PUBLISHING-PROCESSING.md`, `docs/QA/PUBLISHING-FRONTEND.md`, and `docs/QA/PUBLISHING-PROCESSING.md`.
 
 ## Apps
 

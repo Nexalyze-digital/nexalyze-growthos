@@ -79,7 +79,11 @@ try {
   await publishing.getByText("Draft added to the publishing queue.").waitFor({ timeout: 15000 });
 
   await publishing.getByRole("tab", { name: "Queue" }).click();
-  await publishing.getByText(/LinkedIn|pending|cancelled/i).first().waitFor({ timeout: 15000 });
+  await publishing.getByText(/LinkedIn|pending/i).first().waitFor({ timeout: 15000 });
+  await publishing.getByRole("button", { name: "Process next" }).click();
+  await publishing.getByText("Publishing queue processed.").waitFor({ timeout: 15000 });
+  await publishing.getByText(/LinkedIn|published/i).first().waitFor({ timeout: 15000 });
+  await publishing.getByText(/Mock LinkedIn provider accepted/i).first().waitFor({ timeout: 15000 });
 
   await publishing.getByRole("tab", { name: "Library" }).click();
   await publishing.getByLabel("Search").fill("Publishing smoke");
